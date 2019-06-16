@@ -325,8 +325,8 @@ class Strategy(db.Model):
     nexs = db.Column(db.Integer) # number events per samp
     og = db.Column(db.Float) # output gain
     symbol = db.Column(db.String(3)) # symbol from which get features: {'BID','ASK'}
-    combine = db.Column(db.String(5)) # algo for combining networks {'mean','wmean',...}
-    combineparams = db.Column(db.String(30)) # combine parameters if needed (COMB/BID/ASK)
+    combine = db.Column(db.String(5)) # Combine True or False
+    combineparams = db.Column(db.String(30)) # algo for combining networks {'mean','wmean',...}
     networks = db.relationship("Network",
                              secondary=StrategyNetwork, 
                              backref="strategies")

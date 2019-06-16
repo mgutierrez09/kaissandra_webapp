@@ -233,7 +233,7 @@ def set_trader():
         result = trader_sch.dump(trader)
         response = jsonify({'trader': result})
         # TODO: choose the right status for succesful PUT
-        response.status_code = 202
+        response.status_code = 200
         response.headers['Location'] = url_for('api.get_trader_entry', id=trader.id)
         return response
     # POST
@@ -251,7 +251,7 @@ def set_trader():
         'message': mess,
         'trader': result,
     })
-    response.status_code = 201
+    response.status_code = 200
     response.headers['Location'] = url_for('api.get_trader_entry', id=trader.id)
     return response
 
@@ -273,7 +273,13 @@ def set_strategy(id):
 #    print("strategy.strategyname")
 #    print(strategy.strategyname)
     list_strategies = Strategy.query.all()
+#    print("list_strategies")
+#    print(list_strategies)
     new_strategy = data[0]
+#    print("data")
+#    print(data)
+#    print("new_strategy")
+#    print(new_strategy)
     if new_strategy.strategyname not in [stra.strategyname for stra in list_strategies]:
         # create new strategy
         code = trader.add_strategy(new_strategy)
@@ -288,10 +294,10 @@ def set_strategy(id):
     
     if code == 1:
         mess = 'New stratedy added'
-        status_code = 201
+        status_code = 200
     elif code == 0:
         mess = 'Strategy already existed. Parameters updated'
-        status_code = 202
+        status_code = 200
     else:
         return bad_request('Wrong code when strategy added to trader. Check fields and try again')
     
@@ -322,7 +328,6 @@ def set_network():
         data = network_sch.load(json_data)
     except ma.ValidationError as err:
         return jsonify(err.messages), 422
-    
     list_networks = Network.query.all()
     if data[0].networkname not in [net.networkname for net in list_networks]:
         # create new strategy
@@ -375,6 +380,7 @@ def set_assets(id):
 #        
 #    except ma.ValidationError as err:
 #        return jsonify(err.messages), 422
+#    print(data)
     assetnames = data['assets'].split(',')
     list_assets = []
     list_assetnames = []
@@ -391,7 +397,7 @@ def set_assets(id):
         if asset not in trader.assets:
             list_assets.append(asset)
             list_assetnames.append(assetname)
-    print(list_assetnames)
+#    print(list_assetnames)
     code = trader.add_assets(list_assets)
     # loop over assets in trader to unlink those which are not in trader anymore
     for asset in trader.assets:
@@ -485,7 +491,7 @@ def open_position(id):
         data_sch = position_sch.load(json_data)
         position = data_sch[0]
         #position.dtosoll = dt.datetime.utcnow()
-        print(data_sch)
+        #print(data_sch)
         code = session.add_position(position)
         mess = "Position opened with code "+str(code)
     except ma.ValidationError as err:
@@ -523,16 +529,15 @@ def close_position(id):
         return bad_request('Position must be open.')
     if position == None:
         return bad_request('Position does not exist.')
-    print(type(json_data['roisoll']))
-    print(json_data['groisoll'])
     code = position.set_attributes(json_data)
-    print(type(position.groisoll))
     splits = update_results(position)
     db.session.commit()
     mess = "Position closed with code "+str(code)
     result = PositionSchema().dump(position)
-    print(splits[0].userlots)
-    splits_result = PositionSplitSchema().dump(splits[0])
+    if len(splits)>0:
+        splits_result = PositionSplitSchema().dump(splits[0])
+    else:
+        splits_result = []
     return jsonify({
         'message': mess,
         'Position': result,
