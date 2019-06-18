@@ -9,6 +9,7 @@ import datetime as dt
 from flask import jsonify, request, url_for, g
 from app import db, ma, Config
 from app.api import bp
+from app.email import send_pos_email
 from app.tables import (Trader, Strategy, Asset, Network, Session, Position, PositionSplit,
                         User, TraderSchema, StrategySchema, NetworkSchema, SessionSchema, 
                         PositionSchema, PositionSplitSchema)
@@ -270,6 +271,11 @@ def set_strategy(id):
         data = str_sch.load(json_data)
     except ma.ValidationError as err:
         return jsonify(err.messages), 422
+    if 'sessionname' in json_data:
+        sessionname = json_data['sessionname']
+        del json_data['sessionname']
+    else:
+        sessionname = None
 #    print("strategy.strategyname")
 #    print(strategy.strategyname)
     list_strategies = Strategy.query.all()
@@ -290,6 +296,9 @@ def set_strategy(id):
         code_attrs = strategy.set_attributes(json_data)
         if code_attrs<0:
             return bad_request('Error when setting attributes. Check them and resend request')
+    # add session to strategy
+    if sessionname != None:
+        Session.query.filter_by(sessionname=sessionname).first().add_strategy(strategy)
     db.session.commit()
     
     if code == 1:
@@ -498,7 +507,15 @@ def open_position(id):
         return jsonify(err.messages), 422
     
     db.session.commit()
+    
+    # jsonify
     result = position_sch.dump(position)
+    # send email
+    #if session.sessiontype == 'live':
+    
+    pos_dict = result[0]
+    del pos_dict['positionsplits']
+    send_pos_email(pos_dict, 'open')
     return jsonify({
         'message': mess,
         'Position': result,
@@ -534,6 +551,11 @@ def close_position(id):
     db.session.commit()
     mess = "Position closed with code "+str(code)
     result = PositionSchema().dump(position)
+    
+    #if Session.query.get(position.session_id).sessiontype == 'live':
+    pos_dict = result[0]
+    del pos_dict['positionsplits']
+    send_pos_email(pos_dict, 'close')
     if len(splits)>0:
         splits_result = PositionSplitSchema().dump(splits[0])
     else:
@@ -549,18 +571,22 @@ def close_position(id):
 @token_auth.login_required
 def extend_position(id):
     """  """
-    #json_data = request.get_json() or {}
+    json_data = request.get_json() or {}
     position = Position.query.filter_by(id=id).first()
     if position == None:
         return bad_request('Position does not exist.')
     if position.closed:
         return bad_request('Position already closed. It cannot be extended')
     position.nofext += 1
-    
+    position.groisoll = json_data['groisoll']
     #code = position.set_attributes(json_data)
     db.session.commit()
     mess = "Position extended. Number Extensions: "+str(position.nofext)
     result = PositionSchema().dump(position)
+    #if Session.query.get(position.session_id).sessiontype == 'live':
+    pos_dict = result[0]
+    del pos_dict['positionsplits']
+    send_pos_email(pos_dict, 'extend')
     return jsonify({
         'message': mess,
         'Position': result,

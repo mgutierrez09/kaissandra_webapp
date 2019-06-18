@@ -20,11 +20,12 @@ TraderStratetgy = db.Table(
     db.Column('strategy_id', db.Integer, db.ForeignKey('strategy.id'))
 )
 
-#TraderOrale = db.Table(
-#    'traderoracle',
-#    db.Column('trader_id', db.Integer, db.ForeignKey('trader.id')),
-#    db.Column('oracle_id', db.Integer, db.ForeignKey('oracle.id'))
-#)
+SessionStratetgy = db.Table(
+    'sessionstratetgy',
+    db.Column('session_id', db.Integer, db.ForeignKey('session.id')),
+    db.Column('strategy_id', db.Integer, db.ForeignKey('strategy.id'))
+)
+
 
 TraderAsset = db.Table(
     'traderasset',
@@ -438,6 +439,9 @@ class Session(db.Model):
     meanspread = db.Column(db.Float)
     trader_id = db.Column(db.Integer, db.ForeignKey('trader.id'))
     positions = db.relationship("Position", backref="session")
+    sessionstrategies = db.relationship("Strategy",
+                                 secondary=SessionStratetgy, 
+                                 backref="sessions")
     
     def __repr__(self):
         return '<Session {}>'.format(self.sessionname)
@@ -470,6 +474,14 @@ class Session(db.Model):
         self.roisoll += float(position.roisoll)
         self.roiist += float(position.roiist)
         self.returns += position.lots*float(position.roiist)*Config.LOT
+        
+    def add_strategy(self, strategy):
+        if strategy not in self.sessionstrategies:
+            self.sessionstrategies.append(strategy)
+            #db.session.commit()
+            return 1
+        else:
+            return 0
     
 class Position(db.Model):
     __tablename__ = 'position'
@@ -492,7 +504,7 @@ class Position(db.Model):
     espread = db.Column(db.Float)
     spread = db.Column(db.Float)
     lots = db.Column(db.Float)
-    slfalg = db.Column(db.Boolean) # Make sure this is well defined
+    slfalg = db.Column(db.Boolean, default=False) # Make sure this is well defined
     ticksdiff = db.Column(db.Integer)
     nofext = db.Column(db.Integer, default=0) # number o extensions
     direction =  db.Column(db.Integer)
