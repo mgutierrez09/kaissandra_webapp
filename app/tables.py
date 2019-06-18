@@ -517,6 +517,7 @@ class Position(db.Model):
     #oraclename = db.Column(db.String(64))
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'))
     positionsplits = db.relationship("PositionSplit", backref="position")
+    extensions = db.relationship("Extension", backref="position")
     
     def __repr__(self):
         # TODO: Print position values in a table
@@ -543,9 +544,23 @@ class Position(db.Model):
         else:
             return 0
         
-#class Extension(db.Model):
-#    """  """
-#    
+    def add_extension(self, extension):
+        self.extensions.append(extension)
+        return 1
+        
+class Extension(db.Model):
+    """  """
+    __tablename__ = 'extension'
+    id = db.Column(db.Integer, primary_key=True)
+    dt = db.Column(db.String(20))
+    tickscounter = db.Column(db.Integer)
+    p_mc = db.Column(db.Float)
+    p_md = db.Column(db.Float)
+    direction =  db.Column(db.Integer)
+    strategyname = db.Column(db.String(64))
+    groi = db.Column(db.Float)
+    roi = db.Column(db.Float)
+    position_id = db.Column(db.Integer, db.ForeignKey('position.id'))
     
 class PositionSplit(db.Model):
     """ Helper table that describes the split of slots among users participating
@@ -610,3 +625,8 @@ class PositionSplitSchema(ma.ModelSchema):
     class Meta:
         model = PositionSplit
         sqla_session = db.session  
+        
+class ExtensionSchema(ma.ModelSchema):
+    class Meta:
+        model = Extension
+        sqla_session = db.session

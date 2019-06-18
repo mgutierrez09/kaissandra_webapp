@@ -14,7 +14,7 @@ from app.api import bp
 from app.email import send_pos_email
 from app.tables import (Trader, Strategy, Asset, Network, Session, Position, PositionSplit,
                         User, TraderSchema, StrategySchema, NetworkSchema, SessionSchema, 
-                        PositionSchema, PositionSplitSchema)
+                        PositionSchema, PositionSplitSchema, ExtensionSchema)
 from app.api.errors import bad_request, error_response, unauthorized_request
 from app.api.auth import token_auth
 
@@ -457,7 +457,7 @@ def close_session(id):
     """  """
     session = Session.query.filter_by(id=id).first()
     if session == None:
-        bad_request("Session does not exist")
+        return bad_request("Session does not exist")
     if not session.running:
         return bad_request("Session not running")
     session.running = False
@@ -517,6 +517,14 @@ def open_position(id):
     
     pos_dict = result[0]
     del pos_dict['positionsplits']
+    del pos_dict['filecontent']
+    del pos_dict['filename']
+    del pos_dict['ticksdiff']
+    del pos_dict['dtiist']
+    del pos_dict['dtoist']
+    del pos_dict['bo']
+    del pos_dict['ao']
+    del pos_dict['extensions']
     send_pos_email(pos_dict, 'open')
     return jsonify({
         'message': mess,
@@ -561,6 +569,7 @@ def close_position(id):
     pos_dict = result[0]
     del pos_dict['positionsplits']
     del pos_dict['filecontent']
+    del pos_dict['extensions']
     send_pos_email(pos_dict, 'close')
     if len(splits)>0:
         splits_result = PositionSplitSchema().dump(splits[0])
@@ -585,7 +594,7 @@ def upload_position(id):
         bad_request("position does not exist")
     position.filecontent = file.read()
     #print(str(position.filecontent))
-    print(position.filename)
+    #print(position.filename)
     if position.filename==None:
         position.filename = ''
     db.session.commit()
@@ -593,7 +602,7 @@ def upload_position(id):
         'message': "File "+position.filename+" added to position "+str(id)
     })
     
-@bp.route('/traders/positions/<int:id>/extend', methods=['PUT'])
+@bp.route('/traders/positions/<int:id>/extend', methods=['POST'])
 @token_auth.login_required
 def extend_position(id):
     """  """
@@ -603,19 +612,33 @@ def extend_position(id):
         return bad_request('Position does not exist.')
     if position.closed:
         return bad_request('Position already closed. It cannot be extended')
+    extension_sch = ExtensionSchema()
+    extension = extension_sch.load(json_data)[0]
+    position.add_extension(extension)
     position.nofext += 1
-    position.groisoll = json_data['groisoll']
+    position.groisoll = json_data['groi']
     #code = position.set_attributes(json_data)
     db.session.commit()
     mess = "Position extended. Number Extensions: "+str(position.nofext)
-    result = PositionSchema().dump(position)
+    result_pos = PositionSchema().dump(position)
     #if Session.query.get(position.session_id).sessiontype == 'live':
-    pos_dict = result[0]
+    pos_dict = result_pos[0]
     del pos_dict['positionsplits']
+    del pos_dict['filecontent']
+    del pos_dict['filename']
+    del pos_dict['ticksdiff']
+    del pos_dict['dtiist']
+    del pos_dict['dtoist']
+    del pos_dict['bo']
+    del pos_dict['ao']
+    del pos_dict['extensions']
     send_pos_email(pos_dict, 'extend')
+    result_ext = extension_sch.dump(extension)
+    print(result_ext)
     return jsonify({
         'message': mess,
-        'Position': result,
+        'Extension': result_ext,
+        'Position': result_pos
     })
 
 #@bp.route('/traders/<int:id>/delete', methods=['POST'])
