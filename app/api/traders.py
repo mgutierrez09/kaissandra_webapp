@@ -5,6 +5,8 @@ Created on Tue May 14 11:00:24 2019
 @author: mgutierrez
 """
 
+#import json
+import time
 import datetime as dt
 from flask import jsonify, request, url_for, g
 from app import db, ma, Config
@@ -540,6 +542,7 @@ def close_position(id):
         return bad_request('roisoll must be included.')
     if 'returns' not in json_data:
         return bad_request('returns must be included.')
+    
     json_data['closed'] = True
     position = Position.query.filter_by(id=id).first()
     if position.closed:
@@ -547,6 +550,8 @@ def close_position(id):
     if position == None:
         return bad_request('Position does not exist.')
     code = position.set_attributes(json_data)
+    print(json_data['filename'])
+    print(position.filename)
     splits = update_results(position)
     db.session.commit()
     mess = "Position closed with code "+str(code)
@@ -555,6 +560,7 @@ def close_position(id):
     #if Session.query.get(position.session_id).sessiontype == 'live':
     pos_dict = result[0]
     del pos_dict['positionsplits']
+    del pos_dict['filecontent']
     send_pos_email(pos_dict, 'close')
     if len(splits)>0:
         splits_result = PositionSplitSchema().dump(splits[0])
@@ -565,7 +571,27 @@ def close_position(id):
         'Position': result,
         'Splits':splits_result
     })
-    
+
+@bp.route('/traders/positions/<int:id>/upload', methods=['POST'])
+@token_auth.login_required
+def upload_position(id):
+    """  """
+    time.sleep(1)
+    if 'file' not in request.files:
+        bad_request("File file not included")
+    file = request.files['file']
+    position = Position.query.filter_by(id=id).first()
+    if position == None:
+        bad_request("position does not exist")
+    position.filecontent = file.read()
+    #print(str(position.filecontent))
+    print(position.filename)
+    if position.filename==None:
+        position.filename = ''
+    db.session.commit()
+    return jsonify({
+        'message': "File "+position.filename+" added to position "+str(id)
+    })
     
 @bp.route('/traders/positions/<int:id>/extend', methods=['PUT'])
 @token_auth.login_required

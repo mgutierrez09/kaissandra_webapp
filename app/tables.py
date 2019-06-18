@@ -504,12 +504,16 @@ class Position(db.Model):
     espread = db.Column(db.Float)
     spread = db.Column(db.Float)
     lots = db.Column(db.Float)
+    p_mc = db.Column(db.Float)
+    p_md = db.Column(db.Float)
     slfalg = db.Column(db.Boolean, default=False) # Make sure this is well defined
     ticksdiff = db.Column(db.Integer)
     nofext = db.Column(db.Integer, default=0) # number o extensions
     direction =  db.Column(db.Integer)
     closed = db.Column(db.Boolean, default=False)
     strategyname = db.Column(db.String(64))
+    filename = db.Column(db.String(40))
+    filecontent = db.Column(db.LargeBinary)
     #oraclename = db.Column(db.String(64))
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'))
     positionsplits = db.relationship("PositionSplit", backref="position")
@@ -538,6 +542,10 @@ class Position(db.Model):
             return 1
         else:
             return 0
+        
+#class Extension(db.Model):
+#    """  """
+#    
     
 class PositionSplit(db.Model):
     """ Helper table that describes the split of slots among users participating
