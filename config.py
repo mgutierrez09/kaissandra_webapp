@@ -21,6 +21,7 @@ class Config(object):
     'postgresql+psycopg2://{user}:{pw}@{url}/{db}'\
         .format(user=os.environ.get('POSTGRES_USER'),pw=os.environ.get('POSTGRES_PW'),\
                 url=os.environ.get('POSTGRES_URL'),db=os.environ.get('POSTGRES_DB'))
+    print(os.environ.get('MAIL_SERVER'))
 #    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
 #        'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
