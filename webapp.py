@@ -6,7 +6,7 @@ Created on Sat May 11 17:56:10 2019
 """
 
 from app import create_app, db
-from app.tables import User, Position, Trader, Strategy, Network, \
+from app.tables_test import User, Position, Trader, Strategy, Network, \
                        Session, Asset
 
 app = create_app()
