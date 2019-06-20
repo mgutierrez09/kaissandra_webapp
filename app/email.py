@@ -13,7 +13,10 @@ import pandas as pd
 
 def send_async_email(app, msg):
     with app.app_context():
-        mail.send(msg)
+        try:
+            mail.send(msg)
+        except:
+            print("WARNING! Email not sent")
 
 
 def send_email(subject, sender, recipients, text_body, html_body):

@@ -8,7 +8,8 @@ Created on Mon May 13 15:35:41 2019
 from flask import jsonify, request, url_for, g
 from app import db
 from app.api import bp
-from app.tables import (User, Trader, UserSchema, UserTrader, UserTraderSchema, 
+#from app.tables_test import User, UserSchema
+from app.tables_test import (User, Trader, UserSchema, UserTrader, UserTraderSchema, 
                         PositionSplitSchema, PositionUserSchema)
 from app.api.errors import bad_request, unauthorized_request
 from app.api.auth import token_auth, basic_auth

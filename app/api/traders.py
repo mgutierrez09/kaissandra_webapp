@@ -12,14 +12,13 @@ from flask import jsonify, request, url_for, g
 from app import db, ma, Config
 from app.api import bp
 from app.email import send_pos_email
-from app.tables import (Trader, Strategy, Asset, Network, Session, Position, PositionSplit,
+from app.tables_test import (Trader, Strategy, Asset, Network, Session, Position, PositionSplit,
                         User, TraderSchema, StrategySchema, NetworkSchema, SessionSchema, 
                         PositionSchema, PositionSplitSchema, ExtensionSchema)
 from app.api.errors import bad_request, error_response, unauthorized_request
 from app.api.auth import token_auth
 
 str_sch = StrategySchema()
-#oracle_sch = OracleSchema()
 network_sch = NetworkSchema()
 
 @bp.route('/traders/<int:id>', methods=['GET'])
@@ -171,7 +170,7 @@ def get_position(id):
     """  """
     position = Position.query.filter_by(id=id).first()
     result = PositionSchema().dump(position)
-    print(result)
+    #print(result)
     return jsonify({
         'Position':result
     })
@@ -558,8 +557,8 @@ def close_position(id):
     if position == None:
         return bad_request('Position does not exist.')
     code = position.set_attributes(json_data)
-    print(json_data['filename'])
-    print(position.filename)
+    #print(json_data['filename'])
+    #print(position.filename)
     splits = update_results(position)
     db.session.commit()
     mess = "Position closed with code "+str(code)
@@ -634,7 +633,7 @@ def extend_position(id):
     del pos_dict['extensions']
     send_pos_email(pos_dict, 'extend')
     result_ext = extension_sch.dump(extension)
-    print(result_ext)
+    #print(result_ext)
     return jsonify({
         'message': mess,
         'Extension': result_ext,

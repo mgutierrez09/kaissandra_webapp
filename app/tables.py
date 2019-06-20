@@ -39,12 +39,6 @@ StrategyNetwork = db.Table(
     db.Column('network_id', db.Integer, db.ForeignKey('network.id'))
 )
 
-#UserTrader = db.Table(
-#    'usertrader',
-#    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-#    db.Column('trader_id', db.Integer, db.ForeignKey('trader.id'))
-#)
-
 class UserTrader(db.Model):
     __tablename__ = 'usertrader'
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -561,6 +555,10 @@ class Extension(db.Model):
     groi = db.Column(db.Float)
     roi = db.Column(db.Float)
     position_id = db.Column(db.Integer, db.ForeignKey('position.id'))
+    
+    def __repr__(self):
+        # TODO: Print position values in a table
+        return '<Extension {}>'.format(self.__tablename__)
     
 class PositionSplit(db.Model):
     """ Helper table that describes the split of slots among users participating

@@ -7,7 +7,7 @@ Created on Tue Jun 11 16:22:13 2019
 
 from flask import g
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
-from app.tables import User
+from app.tables_test import User
 from app.api.errors import error_response, unauthorized_request
 
 #def is_admin(id):
