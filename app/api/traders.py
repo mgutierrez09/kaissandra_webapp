@@ -475,8 +475,8 @@ def open_position(id):
     session = Session.query.get(id)
     if session == None:
         return bad_request("Session does not exist.")
-    if not session.running:
-        return bad_request("Session not running.")
+#    if not session.running:
+#        return bad_request("Session not running.")
     json_data = request.get_json() or {}
     if 'asset' not in json_data:
         return bad_request('asset must be included.')
@@ -524,7 +524,7 @@ def open_position(id):
     del pos_dict['bo']
     del pos_dict['ao']
     del pos_dict['extensions']
-    send_pos_email(pos_dict, 'open')
+    send_pos_email(pos_dict, pos_dict['dtisoll'], 'open')
     return jsonify({
         'message': mess,
         'Position': result,
@@ -569,7 +569,7 @@ def close_position(id):
     del pos_dict['positionsplits']
     del pos_dict['filecontent']
     del pos_dict['extensions']
-    send_pos_email(pos_dict, 'close')
+    send_pos_email(pos_dict, pos_dict['dtosoll'], 'close')
     if len(splits)>0:
         splits_result = PositionSplitSchema().dump(splits[0])
     else:
@@ -631,7 +631,7 @@ def extend_position(id):
     del pos_dict['bo']
     del pos_dict['ao']
     del pos_dict['extensions']
-    send_pos_email(pos_dict, 'extend')
+    send_pos_email(pos_dict, extension.dt, 'extend')
     result_ext = extension_sch.dump(extension)
     #print(result_ext)
     return jsonify({

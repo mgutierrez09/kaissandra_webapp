@@ -26,12 +26,12 @@ def send_email(subject, sender, recipients, text_body, html_body):
     Thread(target=send_async_email,
            args=(current_app._get_current_object(), msg)).start()
 
-def send_pos_email(dict_pos, event):
+def send_pos_email(dict_pos, dt, event):
     """ Send emal about position has been opened """
     content = pd.DataFrame(dict_pos, index=[0])
     body = content.to_string()
     html = content.to_html()
-    subject = dict_pos['dtisoll'] + ' ' + dict_pos['asset'] + ' ' + event
+    subject = dt + ' ' + dict_pos['asset'] + ' ' + event
     sender = Config.ADMINS[0]
     # TODO: get users attached to trader as recipients
     recipients = Config.ADMINS
