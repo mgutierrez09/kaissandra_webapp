@@ -10,7 +10,7 @@ from app.api.auth import token_auth
 from app.api.errors import bad_request
 import datetime as dt
 
-@bp.route('/logs/traders/', methods=['POST'])
+@bp.route('/logs/traders', methods=['POST'])
 @token_auth.login_required
 def get_trader_log():
     """  """
