@@ -19,7 +19,7 @@ def get_trader_log():
         return bad_request("Message not included in json.")
     if 'Name' not in json_data:
         return bad_request("Name of trader not included in json.")
-    print(dt.datetime.strftime(dt.datetime.utcnow,'%d.%m.%y %H:%M:%S')+' trader '+json_data['Name']+': '+json_data['Message'])
+    print(dt.datetime.strftime(dt.datetime.utcnow(),'%d.%m.%y %H:%M:%S')+' trader '+json_data['Name']+': '+json_data['Message'])
     
 @bp.route('/logs/networks', methods=['POST'])
 @token_auth.login_required
@@ -28,4 +28,4 @@ def get_network_log():
     json_data = request.get_json() or {}
     if 'Message' not in json_data:
         return bad_request("Message not included in json.")
-    print(dt.datetime.strftime(dt.datetime.utcnow,'%d.%m.%y %H:%M:%S')+' network: '+json_data['Message'])
+    print(dt.datetime.strftime(dt.datetime.utcnow(),'%d.%m.%y %H:%M:%S')+' network: '+json_data['Message'])
