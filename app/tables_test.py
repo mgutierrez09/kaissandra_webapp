@@ -152,7 +152,7 @@ class User(db.Model):
         else:
             return 0
         
-    def get_token(self, expires_in=3600):
+    def get_token(self, expires_in=604800):
         now = dt.datetime.utcnow()
         if self.token and self.token_expiration > now + dt.timedelta(seconds=60):
             return self.token
