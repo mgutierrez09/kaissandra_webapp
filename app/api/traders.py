@@ -22,7 +22,7 @@ str_sch = StrategySchema()
 network_sch = NetworkSchema()
 
 @bp.route('/traders/<int:id>', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 #@is_admin
 def get_trader_entry(id):
     """  """
@@ -32,12 +32,12 @@ def get_trader_entry(id):
     return get_trader(id)
 
 @bp.route('/traders', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def traders():
     return get_traders()
 
 @bp.route('/traders/sessions/<int:id>', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_session(id):
     """  """
     if not g.current_user.isadmin:
@@ -50,7 +50,7 @@ def get_session(id):
     })
     
 @bp.route('/traders/sessions', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_session_from_name():
     """  """
     if not g.current_user.isadmin:
@@ -67,7 +67,7 @@ def get_session_from_name():
     })
     
 @bp.route('/traders/sessions/all', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_sessions():
     """  """
     if not g.current_user.isadmin:
@@ -82,7 +82,7 @@ def get_sessions():
     })
     
 @bp.route('/traders/strategies/all', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_strategies():
     """  """
     if not g.current_user.isadmin:
@@ -94,7 +94,7 @@ def get_strategies():
     return jsonify({'strategies': result})
 
 @bp.route('/traders/strategies/<int:id>', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_strategy(id):
     """  """
     if not g.current_user.isadmin:
@@ -105,7 +105,7 @@ def get_strategy(id):
     return jsonify({'strategy': result})
 
 @bp.route('/traders/<int:id>/strategies', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_strategies_trader(id):
     """  """
     str_sch = StrategySchema(many=True)
@@ -116,28 +116,28 @@ def get_strategies_trader(id):
     return jsonify({'strategies': result})
 
 @bp.route('/traders/networks/all', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_networks():
     """  """
     networks = Network.query.all()
     return jsonify({'networks':NetworkSchema(many=True).dump(networks)})
 
 @bp.route('/traders/strategies/<int:id>/networks', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_networks_from_strategy(id):
     """  """
     strategy = Strategy.query.filter_by(id=id).first()
     return jsonify({'networks':NetworkSchema(many=True).dump(strategy.networks)})
 
 @bp.route('/traders/strategies/networks/<int:id>', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_network(id):
     """  """
     network = Network.query.filter_by(id=id).first()
     return jsonify({'network':NetworkSchema().dump(network)})
 
 @bp.route('/traders/strategies/networks', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_network_from_name():
     """  """
     json_data = request.get_json() or {}
@@ -147,13 +147,13 @@ def get_network_from_name():
     return jsonify({'network':NetworkSchema().dump(network)})
 
 @bp.route('/traders/<int:id>/assets', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_assets(id):
     """  """
     pass
 
 @bp.route('/traders/positionsplits/<int:id>', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_positionsplit(id):
     """  """
     positionsplit = PositionSplit.query.filter_by(id=id).first()
@@ -165,7 +165,7 @@ def get_positionsplit(id):
     })
     
 @bp.route('/traders/positions/<int:id>', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_position(id):
     """  """
     position = Position.query.filter_by(id=id).first()
@@ -176,7 +176,7 @@ def get_position(id):
     })
 
 @bp.route('/traders/positions/all', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_positions():
     """  """
     positions = Position.query.all()
@@ -187,7 +187,7 @@ def get_positions():
     })
     
 @bp.route('/traders/sessions/<int:id>/positions', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_positions_from_session(id):
     """  """
     session = Session.query.filter_by(id=id).first()
@@ -199,7 +199,7 @@ def get_positions_from_session(id):
     })
     
 @bp.route('/traders/positions/filter', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_positions_filter():
     """  """
     data = request.get_json() or {}
@@ -212,7 +212,7 @@ def get_positions_filter():
     })
     
 @bp.route('/traders', methods=['POST','PUT'])
-@token_auth.login_required
+#@token_auth.login_required
 def set_trader():
     data = request.get_json() or {}
 #    if request.method == 'GET':
@@ -258,7 +258,7 @@ def set_trader():
     return response
 
 @bp.route('/traders/<int:id>/strategies', methods=['POST', 'PUT'])
-@token_auth.login_required
+#@token_auth.login_required
 def set_strategy(id):
     """  """
     trader = Trader.query.get(id)
@@ -321,7 +321,7 @@ def set_strategy(id):
     return response
     
 @bp.route('/traders/networks', methods=['POST', 'PUT'])
-@token_auth.login_required
+#@token_auth.login_required
 def set_network():
     """  """
     json_data = request.get_json() or {}
@@ -377,7 +377,7 @@ def set_network():
     return response
 
 @bp.route('/traders/<int:id>/assets', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def set_assets(id):
     """  """
     trader = Trader.query.get(id)
@@ -421,7 +421,7 @@ def set_assets(id):
     })
 
 @bp.route('/traders/<int:id>/sessions', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def open_session(id):
     """  """
     trader = Trader.query.get(id)
@@ -451,7 +451,7 @@ def open_session(id):
     })
     
 @bp.route('/traders/sessions/<int:id>/close', methods=['PUT'])
-@token_auth.login_required
+#@token_auth.login_required
 def close_session(id):
     """  """
     session = Session.query.filter_by(id=id).first()
@@ -469,7 +469,7 @@ def close_session(id):
     })
   
 @bp.route('/traders/sessions/<int:id>/positions/open', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def open_position(id):
     """  """
     session = Session.query.get(id)
@@ -531,7 +531,7 @@ def open_position(id):
     })
 
 @bp.route('/traders/positions/<int:id>/close', methods=['PUT'])
-@token_auth.login_required
+#@token_auth.login_required
 def close_position(id):
     """  """
     json_data = request.get_json() or {}
@@ -581,7 +581,7 @@ def close_position(id):
     })
 
 @bp.route('/traders/positions/<int:id>/upload', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def upload_position(id):
     """  """
     time.sleep(1)
@@ -602,7 +602,7 @@ def upload_position(id):
     })
     
 @bp.route('/traders/positions/<int:id>/extend', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def extend_position(id):
     """  """
     json_data = request.get_json() or {}
