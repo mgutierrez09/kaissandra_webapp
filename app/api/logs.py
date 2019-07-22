@@ -11,7 +11,7 @@ from app.api.errors import bad_request
 import datetime as dt
 
 @bp.route('/logs/traders', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_trader_log():
     """  """
     json_data = request.get_json() or {}
@@ -26,7 +26,7 @@ def get_trader_log():
     })
     
 @bp.route('/logs/networks', methods=['POST'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_network_log():
     """  """
     json_data = request.get_json() or {}
