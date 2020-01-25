@@ -16,13 +16,16 @@ $flask db migrate -m "<message>"
 $flask db upgrade
 
 Create new username and password by getting into the terminal with $flask shell, and the run:
->>> from app import db
->>> from app.tables_test import User
->>> u = User(username=<username>,  isadmin=True)
->>> u.set_password(<password>)
->>> u.check_password(<password>)
->>> db.session.add(u)
->>> db.session.commit()
+> from app import db
+
+> from app.tables_test import User
+
+> u = User(username=<username>,  isadmin=True)
+
+> u.set_password(<password>)
+> u.check_password(<password>)
+> db.session.add(u)
+> db.session.commit()
 
 ** How to use
  
