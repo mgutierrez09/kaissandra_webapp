@@ -14,11 +14,11 @@ the migration folder and create a new db environment by running
 
 $flask db init
 
-$flask db migrate -m "<message>"
+$flask db migrate -m "message"
 
 $flask db upgrade
 
-Create new username and password by getting into the terminal with $flask shell, and the run:
+Create new username and password by getting into the terminal with $flask shell, and then run:
 
 > from app import db
 
