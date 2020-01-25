@@ -4,7 +4,7 @@
 
 ## How to use
 
-** Setup
+# Setup
  First install packages in requirements.txt with $pip install -r requirements.txt. Visual cpp is required too and can be 
 downloaded from ___.
 
@@ -30,8 +30,6 @@ Create new username and password by getting into the terminal with $flask shell,
 > db.session.add(u)
 
 > db.session.commit()
-
-** How to use
  
 ## Authors
 
