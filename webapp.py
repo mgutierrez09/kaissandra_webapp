@@ -14,6 +14,6 @@ app = create_app()
 
 @app.shell_context_processor
 def make_shell_context():
-    {'db':db, 'User':User, 'Position':Position, 'Trader':Trader,
+    return {'db':db, 'User':User, 'Position':Position, 'Trader':Trader,
      'Strartegy':Strategy, 'Network':Network,
      'Session':Session, 'Asset':Asset}

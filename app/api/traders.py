@@ -20,6 +20,9 @@ from app.api.auth import token_auth
 
 str_sch = StrategySchema()
 network_sch = NetworkSchema()
+### WARNING! Temporary. Params should be read from DB
+params = {}
+
 
 @bp.route('/traders/<int:id>', methods=['GET'])
 #@token_auth.login_required
@@ -66,32 +69,32 @@ def get_session_from_name():
         'Session': result,
     })
     
-@bp.route('/traders/sessions/all', methods=['GET'])
-#@token_auth.login_required
-def get_sessions():
-    """  """
-    if not g.current_user.isadmin:
-        return unauthorized_request("User is not admin. Access denied")
-    #json_data = request.get_json() or {}
-#    if 'sessionname' not in json_data:
-#        return bad_request('sessionname must be included.')
-    sessions = Session.query.all()
-    result = SessionSchema(many=True).dump(sessions)
-    return jsonify({
-        'Sessions': result,
-    })
+#@bp.route('/traders/sessions/all', methods=['GET'])
+##@token_auth.login_required
+#def get_sessions():
+#    """  """
+#    if not g.current_user.isadmin:
+#        return unauthorized_request("User is not admin. Access denied")
+#    #json_data = request.get_json() or {}
+##    if 'sessionname' not in json_data:
+##        return bad_request('sessionname must be included.')
+#    sessions = Session.query.all()
+#    result = SessionSchema(many=True).dump(sessions)
+#    return jsonify({
+#        'Sessions': result,
+#    })
     
-@bp.route('/traders/strategies/all', methods=['GET'])
-#@token_auth.login_required
-def get_strategies():
-    """  """
-    if not g.current_user.isadmin:
-        return unauthorized_request("User is not admin. Access denied")
-    str_sch = StrategySchema(many=True)
-    strategies = Strategy.query.all()
-    # Serialize the queryset
-    result = str_sch.dump(strategies)
-    return jsonify({'strategies': result})
+#@bp.route('/traders/strategies/all', methods=['GET'])
+##@token_auth.login_required
+#def get_strategies():
+#    """  """
+#    if not g.current_user.isadmin:
+#        return unauthorized_request("User is not admin. Access denied")
+#    str_sch = StrategySchema(many=True)
+#    strategies = Strategy.query.all()
+#    # Serialize the queryset
+#    result = str_sch.dump(strategies)
+#    return jsonify({'strategies': result})
 
 @bp.route('/traders/strategies/<int:id>', methods=['GET'])
 #@token_auth.login_required
@@ -115,12 +118,12 @@ def get_strategies_trader(id):
     result = str_sch.dump(strategies)
     return jsonify({'strategies': result})
 
-@bp.route('/traders/networks/all', methods=['GET'])
-#@token_auth.login_required
-def get_networks():
-    """  """
-    networks = Network.query.all()
-    return jsonify({'networks':NetworkSchema(many=True).dump(networks)})
+#@bp.route('/traders/networks/all', methods=['GET'])
+##@token_auth.login_required
+#def get_networks():
+#    """  """
+#    networks = Network.query.all()
+#    return jsonify({'networks':NetworkSchema(many=True).dump(networks)})
 
 @bp.route('/traders/strategies/<int:id>/networks', methods=['GET'])
 #@token_auth.login_required
@@ -175,16 +178,16 @@ def get_position(id):
         'Position':result
     })
 
-@bp.route('/traders/positions/all', methods=['GET'])
-#@token_auth.login_required
-def get_positions():
-    """  """
-    positions = Position.query.all()
-    
-    result = PositionSchema(many=True).dump(positions)
-    return jsonify({
-        'Positions':result
-    })
+#@bp.route('/traders/positions/all', methods=['GET'])
+##@token_auth.login_required
+#def get_positions():
+#    """  """
+#    positions = Position.query.all()
+#    
+#    result = PositionSchema(many=True).dump(positions)
+#    return jsonify({
+#        'Positions':result
+#    })
     
 @bp.route('/traders/sessions/<int:id>/positions', methods=['GET'])
 #@token_auth.login_required
@@ -198,18 +201,20 @@ def get_positions_from_session(id):
         'Positions':result
     })
     
-@bp.route('/traders/positions/filter', methods=['GET'])
-#@token_auth.login_required
-def get_positions_filter():
-    """  """
-    data = request.get_json() or {}
-    if 'asset' in data:
-        positions = Position.query.filter_by(asset=data['asset']).all()
+
     
-    result = PositionSchema(many=True).dump(positions)
-    return jsonify({
-        'Positions':result
-    })
+#@bp.route('/traders/positions/filter', methods=['GET'])
+##@token_auth.login_required
+#def get_positions_filter():
+#    """  """
+#    data = request.get_json() or {}
+#    if 'asset' in data:
+#        positions = Position.query.filter_by(asset=data['asset']).all()
+#    
+#    result = PositionSchema(many=True).dump(positions)
+#    return jsonify({
+#        'Positions':result
+#    })
     
 @bp.route('/traders', methods=['POST','PUT'])
 #@token_auth.login_required
@@ -445,6 +450,8 @@ def open_session(id):
         return bad_request("Session already exits. Choose another sessionname")
     db.session.commit()
     result = session_sch.dump(session)
+    # update params structure
+    params[session.id] = {}
     return jsonify({
         'message': mess,
         'Session': result,
@@ -467,7 +474,75 @@ def close_session(id):
         'message': "Session closed",
         'Session': result,
     })
-  
+    
+@bp.route('/traders/sessions/get_params', methods=['GET'])
+#@token_auth.login_required
+def get_params():
+    """  """
+    return jsonify({
+        'params': params,
+    })
+@bp.route('/traders/sessions/change_params', methods=['PUT'])
+#@token_auth.login_required
+def change_params():
+    """ Change parameters of opened sessions """
+    json_data = request.get_json() or {}
+    if len(params)==0:
+        return jsonify({
+            'message': "No session running. No parameters changed"
+        })
+    message = ""
+    for id in params.keys():
+        for json_key in json_data.keys():
+            if json_key == 'lots' or json_key == 'stoploss':#and type(json_data[json_key])==int
+                try:
+                    value = float(json_data[json_key])
+                except:
+                    return bad_request(json_key+" value is not a number")
+                if json_key in params[id]:
+                    params[id][json_key] = value
+                    message = message+"\nWARNING! Parameter "+str(json_key)+" already changed "+\
+                          "but not updated. Value overwritten."
+                else:
+                    params[id].update({json_key:value})
+                    message = message+"\nParamters updated"
+            else:
+                message = message+"\nWARNING! Parameter "+str(json_key)+" not allowed or value is wrong. Skipped"
+    return jsonify({
+        'message': message,
+        'params': params,
+    })
+    
+@bp.route('/traders/sessions/<int:id>/get_params', methods=['GET'])
+#@token_auth.login_required
+def params_enquired(id):
+    """ Route for parameters enquiry from trader """
+    session = Session.query.filter_by(id=id).first()
+    if session == None:
+        return bad_request("Session does not exist")
+    if not session.running:
+        return bad_request("Session not running")
+    # TODO: Find strategies with new parameters and send them back
+    json_return = jsonify({
+        'message': "New params",
+        'params': params[id],
+    })
+    for key in list(params[id]):
+        del params[id][key]
+    #print(params)
+    return json_return
+
+@bp.route('/traders/sessions/reset', methods=['PUT'])
+#@token_auth.login_required
+def reset_sessions():
+    """ Change parameters of opened sessions """
+    for key in list(params):
+        del params[key]
+    message = "Sessions parameters reset"
+    return jsonify({
+        'message': message,
+    })
+    
 @bp.route('/traders/sessions/<int:id>/positions/open', methods=['POST'])
 #@token_auth.login_required
 def open_position(id):
@@ -583,7 +658,7 @@ def close_position(id):
 @bp.route('/traders/positions/<int:id>/upload', methods=['POST'])
 #@token_auth.login_required
 def upload_position(id):
-    """  """
+    """ Upload position evolution over time to DB """
     time.sleep(1)
     if 'file' not in request.files:
         bad_request("File file not included")
@@ -622,15 +697,25 @@ def extend_position(id):
     result_pos = PositionSchema().dump(position)
     #if Session.query.get(position.session_id).sessiontype == 'live':
     pos_dict = result_pos[0]
+    # update p_mc/p_md
+    pos_dict['p_mc'] = extension.p_mc
+    pos_dict['p_md'] = extension.p_md
+    # delete unnecessary fields
     del pos_dict['positionsplits']
     del pos_dict['filecontent']
     del pos_dict['filename']
     del pos_dict['ticksdiff']
     del pos_dict['dtiist']
     del pos_dict['dtoist']
+    del pos_dict['dtosoll']
+    del pos_dict['groiist']
+    del pos_dict['roiist']
     del pos_dict['bo']
     del pos_dict['ao']
     del pos_dict['extensions']
+    #del pos_dict['closed']
+    del pos_dict['spread']
+    del pos_dict['slfalg']
     send_pos_email(pos_dict, extension.dt, 'extend')
     result_ext = extension_sch.dump(extension)
     #print(result_ext)
@@ -657,13 +742,13 @@ def get_trader(id):
     result = trader_sch.dump(trader)
     return jsonify({'trader': result})
 
-def get_traders():
-    """  """
-    trader_sch = TraderSchema(many=True)
-    traders = Trader.query.all()
-    # Serialize the queryset
-    result = trader_sch.dump(traders)
-    return jsonify({'traders': result})
+#def get_traders():
+#    """  """
+#    trader_sch = TraderSchema(many=True)
+#    traders = Trader.query.all()
+#    # Serialize the queryset
+#    result = trader_sch.dump(traders)
+#    return jsonify({'traders': result})
 
 def update_results(position):
     """ Set splits corresponding to users for the position """

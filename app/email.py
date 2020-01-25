@@ -28,13 +28,21 @@ def send_email(subject, sender, recipients, text_body, html_body):
 
 def send_pos_email(dict_pos, dt, event):
     """ Send emal about position has been opened """
-    content = pd.DataFrame(dict_pos, index=[0])
-    body = content.to_string()
-    html = content.to_html()
+    content = pd.DataFrame(dict_pos, index=[0])[pd.DataFrame(columns=dict_pos.keys()).columns.tolist()]
+    body = content.to_string(index=False)
+    html = content.to_html(index=False)
     subject = dt + ' ' + dict_pos['asset'] + ' ' + event
     sender = Config.ADMINS[0]
     # TODO: get users attached to trader as recipients
     recipients = Config.ADMINS
-    send_email(subject, sender, recipients, body, html)
+    if Config.MAIL_SERVER:
+        send_email(subject, sender, recipients, body, html)
+    else:
+        print("Email sent from "+sender)
+        print("Receipients:")
+        print(recipients)
+        print("Subject: "+subject)
+        print("Body:")
+        print(body)
     
     
