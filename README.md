@@ -4,7 +4,7 @@
 
 ## How to use
 
-# Setup
+### Setup
  First install packages in requirements.txt with $pip install -r requirements.txt. Visual cpp is required too and can be 
 downloaded from ___.
 
