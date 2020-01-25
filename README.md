@@ -11,8 +11,11 @@ downloaded from ___.
 Set up DB with $flask db upgrage. 
 WARNING! If you are using sqlite, it might give an error due to incompatibilities with posgresql. In this case, back up
 the migration folder and create a new db environment by running 
+
 $flask db init
+
 $flask db migrate -m "<message>"
+
 $flask db upgrade
 
 Create new username and password by getting into the terminal with $flask shell, and the run:
