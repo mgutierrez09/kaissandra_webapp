@@ -528,6 +528,7 @@ def params_enquired(id):
         'message': "Error. "+str(id)+" not in params",
         'params': {},
         })
+        return json_return
     json_return = jsonify({
         'message': "New params",
         'params': params[id],
