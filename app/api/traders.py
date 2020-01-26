@@ -525,10 +525,10 @@ def params_enquired(id):
     # TODO: Find strategies with new parameters and send them back
     json_return = jsonify({
         'message': "New params",
-        'params': params[id],
+        'params': params[str(id)],
     })
-    for key in list(params[id]):
-        del params[id][key]
+    for key in list(params[str(id)]):
+        del params[str(id)][key]
     #print(params)
     return json_return
 
