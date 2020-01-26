@@ -35,7 +35,7 @@ def send_pos_email(dict_pos, dt, event):
     sender = Config.ADMINS[0]
     # TODO: get users attached to trader as recipients
     recipients = Config.ADMINS
-    if False:#Config.MAIL_SERVER:
+    if Config.MAIL_SERVER:
         send_email(subject, sender, recipients, body, html)
     else:
         print("Email sent from "+sender)
