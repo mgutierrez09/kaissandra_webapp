@@ -101,7 +101,7 @@ def get_session_from_name():
 def get_strategy(id):
     """  """
     if not g.current_user.isadmin:
-        return unauthorized_request("User is not admin. Access denied")
+        return unauthorized_request("Unauthorized. Access denied")
     strategy = Strategy.query.filter_by(id=id).first()
     # Serialize the queryset
     result = StrategySchema().dump(strategy)

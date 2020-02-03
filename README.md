@@ -5,34 +5,38 @@
 ## How to use
 
 ### Setup
- First install packages in requirements.txt with $pip install -r requirements.txt. Visual cpp is required too and can be 
+
+ First install packages in requirements.txt with `$pip install -r requirements.txt`. Visual cpp is required too and can be 
 downloaded from ___.
 
-Set up DB with $flask db upgrage. 
+Set up DB with `$flask db upgrage`.
+ 
 WARNING! If you are using sqlite, it might give an error due to incompatibilities with posgresql. In this case, back up
 the migration folder and create a new db environment by running 
 
+```
 $flask db init
-
 $flask db migrate -m "message"
-
 $flask db upgrade
+```
 
 Create new username and password by getting into the terminal with $flask shell, and then run:
 
-> from app import db
+```python
+from app import db
+from app.tables_test import User
+u = User(username=<username>,  isadmin=True)
+u.set_password(<password>)
+u.check_password(<password>)
+db.session.add(u)
+db.session.commit()
+```
 
-> from app.tables_test import User
+Some usuful commands:
 
-> u = User(username=<username>,  isadmin=True)
+- Run debugging mail server:
 
-> u.set_password(<password>)
-
-> u.check_password(<password>)
-
-> db.session.add(u)
-
-> db.session.commit()
+`python -m smtpd -n -c DebuggingServer localhost:8025`
  
 ## Authors
 

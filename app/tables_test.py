@@ -10,9 +10,10 @@ import jwt
 import base64
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import url_for, current_app
-from app import db, ma, Config
+from app import db, ma, Config, login
 import re
 import datetime as dt
+from flask_login import UserMixin
 
 TraderAsset = db.Table(
     'traderasset',
@@ -48,7 +49,7 @@ SessionStratetgy = db.Table(
     db.Column('strategy_id', db.Integer, db.ForeignKey('strategy.id'))
 )
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     isadmin = db.Column(db.Boolean)
@@ -563,6 +564,12 @@ class PositionSplit(db.Model):
         # TODO: Print position values in a table
         return '<PositionSplit>'
     
+# Helper function for flask_login
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+    
+# Schemas
 class StrategySchema(ma.ModelSchema):
     class Meta:
         model = Strategy
