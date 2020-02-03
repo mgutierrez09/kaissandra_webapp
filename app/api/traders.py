@@ -452,6 +452,7 @@ def open_session(id):
     result = session_sch.dump(session)
     # update params structure
     params[session.id] = {}
+    print(params)
     return jsonify({
         'message': mess,
         'Session': result,
@@ -522,7 +523,12 @@ def params_enquired(id):
         return bad_request("Session does not exist")
     if not session.running:
         return bad_request("Session not running")
-    # TODO: Find strategies with new parameters and send them back
+    if id not in params:
+        json_return = jsonify({
+        'message': "Error. "+str(id)+" not in params",
+        'params': {},
+        })
+        return json_return
     json_return = jsonify({
         'message': "New params",
         'params': params[id],
