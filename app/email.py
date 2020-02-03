@@ -44,5 +44,3 @@ def send_pos_email(dict_pos, dt, event):
     print("Subject: "+subject)
     print("Body:")
     print(body)
-    
-    
