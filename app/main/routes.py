@@ -18,14 +18,14 @@ from werkzeug.urls import url_parse
 @login_required
 def index():
     posts = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
+        # {
+        #     'author': {'username': 'John'},
+        #     'body': 'Beautiful day in Portland!'
+        # },
+        # {
+        #     'author': {'username': 'Susan'},
+        #     'body': 'The Avengers movie was so cool!'
+        # }
     ]
     return render_template('index.html', title='Home', posts=posts)
 
