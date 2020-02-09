@@ -27,7 +27,7 @@ def index():
         #     'body': 'The Avengers movie was so cool!'
         # }
     ]
-    return render_template('index.html', title='Home', posts=posts)
+    return render_template('index.html', title='Home', Position=Position)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():

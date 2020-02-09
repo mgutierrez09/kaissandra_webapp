@@ -5,8 +5,7 @@
     <div><p>Budget: 1000</p></div>
     <div><p>Equity: 1000</p></div>
     <div><p>Return of Investment: 0%</p></div>
-    {% for split in current_user.positionsplits %}
-    <div><p> Position Lots: {{ Position.query.filter_by(id=split.position_id).first().userlots }}, ROI: <b>{{ Position.query.filter_by(id=split.position_id).first().roi }}</b></p></div>
-    <!-- <div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div> -->
+    {% for position in Position.query.all() %}
+    <div><p> Position Lots: {{ position.lots }}, Ai: {{ position.ai }}</p></div>
     {% endfor %}
 {% endblock %}
