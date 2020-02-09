@@ -2,10 +2,18 @@
 
 {% block content %}
     <h1>Hi, {{ current_user.username }}!</h1>
-    <div><p>Budget: 1000</p></div>
-    <div><p>Equity: 1000</p></div>
-    <div><p>Return of Investment: 0%</p></div>
-    {% for position in Position.query.all() %}
-    <div><p> Position Lots: {{ position.lots }}, Ai: {{ position.roi }}</p></div>
-    {% endfor %}
+    <div><p>Budget: {{current_user.budget}}</p></div>
+    <div><p>Equity: {{current_user.budget}}</p></div>
+    <div><p>Return of Investment: {{total_roi}}%</p></div>
+    <table>
+        <tr>
+          <th> Open Time </th><th> Close Time </th><th> Asset </th><th> Lots </th><th> GROI </th><th> ROI </th><th> Return </th>
+        </tr>
+        {% for p in vector_pos %}
+        <tr>
+          <td> {{positions[p].dtisoll}} </td><td> {{positions[p].dtosoll}} </td><td> {{positions[p].asset}} </td><td> {{ current_user.positionsplits[p].userlots }}  </td>
+          <td> {{positions[p].groisoll}} </td><td> {{positions[p].roisoll}} </td><td> {{current_user.positionsplits[p].userlots*positions[p].roisoll*1000}} </td>
+        </tr>
+        {% endfor %}    
+    </table>
 {% endblock %}
