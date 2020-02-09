@@ -6,6 +6,6 @@
     <div><p>Equity: 1000</p></div>
     <div><p>Return of Investment: 0%</p></div>
     {% for position in Position.query.all() %}
-    <div><p> Position Lots: {{ position.lots }}, Ai: {{ position.ai }}</p></div>
+    <div><p> Position Lots: {{ position.lots }}, Ai: {{ position.roi }}</p></div>
     {% endfor %}
 {% endblock %}
