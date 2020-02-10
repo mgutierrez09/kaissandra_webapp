@@ -15,9 +15,9 @@ WARNING! If you are using sqlite, it might give an error due to incompatibilitie
 the migration folder and create a new db environment by running 
 
 ```
-$flask db init
-$flask db migrate -m "message"
-$flask db upgrade
+$ flask db init
+$ flask db migrate -m "message"
+$ flask db upgrade
 ```
 
 Create new username and password by getting into the terminal with $flask shell, and then run:
@@ -36,11 +36,15 @@ Some usuful commands:
 
 - Run debugging mail server:
 
-`python -m smtpd -n -c DebuggingServer localhost:8025`
+`$ python -m smtpd -n -c DebuggingServer localhost:8025`
 
-- Get token:
+- Post token:
 
-`http --auth <username>:<password> POST http://localhost:5000/api/tokens`
+`$ http --auth <username>:<password> POST http://localhost:5000/api/tokens`
+
+- request with token bearer:
+
+`http GET http://localhost:5000/api/users/1 "Authorization:Bearer pC1Nu9wwyNt8VCj1trWilFdFI276AcbS"` 
  
 ## Authors
 
