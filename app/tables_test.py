@@ -30,6 +30,20 @@ class UserTrader(db.Model):
     poslots = db.Column(db.Float) # lots per position
     trader = db.relationship("Trader", back_populates="users")
     user = db.relationship("User", back_populates="traders")
+
+    def set_attributes(self, data):
+        """  """
+        for attr in data:
+            if hasattr(self, attr) and self.check_attribute(attr):
+                setattr(self, attr, data[attr])
+            else:
+                return -1
+        return 1
+
+    def check_attribute(self, attr):
+        """ """
+        # TODO: make sure that attribute follows the requirements
+        return True
     
 TraderStratetgy = db.Table(
     'traderstratetgy',

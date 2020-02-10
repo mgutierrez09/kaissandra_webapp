@@ -101,22 +101,22 @@ def modify_user(id):
         'User': result,
     })
     response.status_code = 202
-    response.headers['Location'] = url_for('api.get_user', id=user.id)
+    #response.headers['Location'] = url_for('api.get_user', id=user.id)
     return response
 
-@bp.route('/users/<int:id>/traders', methods=['GET'])
-@token_auth.login_required
-def get_traders(id):
-    response = jsonify({
-        'message': 'Not implemented.'
-    })
-    return response
-#    user = User.query.get_or_404(id)
-#    page = request.args.get('page', 1, type=int)
-#    per_page = min(request.args.get('per_page', 10, type=int), 100)
-#    data = User.to_collection_dict(user.followers, page, per_page,
-#                                   'api.get_followers', id=id)
-#    return jsonify(data)
+# @bp.route('/users/<int:id>/traders', methods=['GET'])
+# @token_auth.login_required
+# def get_traders(id):
+#     response = jsonify({
+#         'message': 'Not implemented.'
+#     })
+#     return response
+# #    user = User.query.get_or_404(id)
+# #    page = request.args.get('page', 1, type=int)
+# #    per_page = min(request.args.get('per_page', 10, type=int), 100)
+# #    data = User.to_collection_dict(user.followers, page, per_page,
+# #                                   'api.get_followers', id=id)
+# #    return jsonify(data)
 
 @bp.route('/users/<int:id>/funds', methods=['POST', 'PUT'])
 @token_auth.login_required
@@ -141,9 +141,9 @@ def add_funds(id):
         return bad_request('Funds must be included.')
     
 
-@bp.route('/users/<int:id>/traders', methods=['POST', 'PUT'])
+@bp.route('/users/<int:id>/traders', methods=['POST'])
 @token_auth.login_required
-def add_trader(id):
+def add_trader2user(id):
     user = User.query.get(id)
     if not user:
         return bad_request('User does not exist.')
@@ -165,7 +165,6 @@ def add_trader(id):
         return bad_request('Trader does not exist.')
     #trader.add_client(user)
     usertrader = UserTrader.query.filter_by(user_id=id, trader_id=trader.id).first()
-    print(usertrader)
     if usertrader == None:
         code = 1
         usertrader = UserTrader(user_id=id, trader_id=trader.id, 
@@ -205,3 +204,68 @@ def add_trader(id):
     response.status_code = status_code
     #response.headers['Location'] = url_for('api.get_strategy', id=trader.id)
     return response
+
+@bp.route('/users/<int:id>/traders', methods=['PUT'])
+@token_auth.login_required
+def update_trader_user(id):
+    user = User.query.get(id)
+    if not user:
+        return bad_request('User does not exist.')
+    
+    data = request.get_json() or {}
+    if 'tradername' not in data:
+        return bad_request('Tradername should be included in json.')
+    
+    trader = Trader.query.filter_by(tradername=data['tradername']).first()
+    if trader == None:
+        return bad_request('Trader does not exist.')
+    # delete tradename from json to create Schema
+    del data['tradername']
+    usertrader = UserTrader.query.filter_by(user_id=id, trader_id=trader.id).first()
+
+    if usertrader == None:
+        return bad_request('User-trader relationship does not exit. Call POST instead.')
+    else:
+        if usertrader.set_attributes(data) == -1:
+            return bad_request('Bad attributes. Check them and submit again')
+        db.session.commit()
+        result = UserTraderSchema().dump(usertrader)
+        print(usertrader.poslots)
+        mess = "User-trader relationship modified"
+        response = jsonify({
+            'message': mess,
+            'User': result,
+        })
+        response.status_code = 202
+        return response
+
+@bp.route('/users/<int:id>/traders', methods=['GET'])
+@token_auth.login_required
+def get_trader_user(id):
+    """  """
+    user = User.query.get(id)
+    if not user:
+        return bad_request('User does not exist.')
+    
+    data = request.get_json() or {}
+    if 'tradername' not in data:
+        return bad_request('Tradername should be included in json.')
+    
+    trader = Trader.query.filter_by(tradername=data['tradername']).first()
+    if trader == None:
+        return bad_request('Trader does not exist.')
+    # delete tradename from json to create Schema
+    del data['tradername']
+    usertrader = UserTrader.query.filter_by(user_id=id, trader_id=trader.id).first()
+
+    if usertrader == None:
+        return bad_request('User-trader relationship does not exit. Call POST instead.')
+    else:
+        result = UserTraderSchema().dump(usertrader)
+        mess = "User-trader relationship"
+        response = jsonify({
+            'message': mess,
+            'User': result,
+        })
+        response.status_code = 202
+        return response
