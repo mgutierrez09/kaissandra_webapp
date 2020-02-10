@@ -11,8 +11,8 @@
         </tr>
         {% for p in vector_pos %}
         <tr>
-          <td> {{positions[p].dtisoll}} </td><td> {{positions[p].dtosoll}} </td><td> {{positions[p].asset}} </td><td> {{ current_user.positionsplits[p].userlots }}  </td>
-          <td> {{positions[p].groisoll}} </td><td> {{positions[p].roisoll}} </td><td> {{current_user.positionsplits[p].userlots*positions[p].roisoll*1000}} </td>
+          <td> {{positions[p].dtiist}} </td><td> {{positions[p].dtosoll}} </td><td> {{positions[p].asset}} </td><td> {{ current_user.positionsplits[p].userlots }}  </td>
+          <td> {{positions[p].groiist}} </td><td> {{positions[p].roiist}} </td><td> {{current_user.positionsplits[p].userlots*positions[p].roiist*1000}} </td>
         </tr>
         {% endfor %}    
     </table>

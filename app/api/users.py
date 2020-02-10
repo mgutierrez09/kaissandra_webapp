@@ -42,9 +42,12 @@ def get_positions_user(id):
         'Splits':result_split
     })
 
-@bp.route('/users', methods=['POST'])
+@bp.route('/users/<int:id>/create', methods=['POST'])
 @token_auth.login_required # temporary. Only admins are able to create new users
 def create_user():
+    admin_user = User.query.get(id)
+    if not admin_user and not admin_user.isadmin:
+        return bad_request('Only admins can create users')
     data = request.get_json() or {}
     user = User()
     # Validate fields
@@ -129,7 +132,7 @@ def add_funds(id):
         except:
             return bad_request('Funds must be a float number.')
         user.budget += funds
-        db.commit()
+        db.session.commit()
         response = jsonify({
             'message': 'Funds added. New budget: '+str(user.budget),
         })

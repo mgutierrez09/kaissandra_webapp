@@ -18,7 +18,7 @@ from werkzeug.urls import url_parse
 @login_required
 def index():
     positions = [Position.query.filter_by(id=split.position_id).first() for split in current_user.positionsplits]
-    total_roi = sum([position.roisoll for position in positions])
+    total_roi = sum([position.roiist for position in positions])
     vector_pos = [i for i in range(len(positions))]
     return render_template('index.html', title='Home', positions=positions, total_roi=total_roi, vector_pos=vector_pos)
 

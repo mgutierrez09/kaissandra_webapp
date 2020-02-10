@@ -46,6 +46,8 @@ Some usuful commands:
 
 `http GET http://localhost:5000/api/users/1 "Authorization:Bearer pC1Nu9wwyNt8VCj1trWilFdFI276AcbS"` 
  
-## Authors
+## Author
 
-[Miguel A. Gutierrez-Estevez] (https://www.linkedin.com/in/magutierrezestevez/)
+Miguel A. Gutierrez-Estevez 
+
+https://www.linkedin.com/in/magutierrezestevez/
