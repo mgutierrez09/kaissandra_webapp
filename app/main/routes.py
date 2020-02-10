@@ -17,21 +17,14 @@ from werkzeug.urls import url_parse
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    posts = [
-        # {
-        #     'author': {'username': 'John'},
-        #     'body': 'Beautiful day in Portland!'
-        # },
-        # {
-        #     'author': {'username': 'Susan'},
-        #     'body': 'The Avengers movie was so cool!'
-        # }
-    ]
-    return render_template('index.html', title='Home', Position=Position)
+    positions = [Position.query.filter_by(id=split.position_id).first() for split in current_user.positionsplits]
+    total_roi = sum([position.roisoll for position in positions])
+    vector_pos = [i for i in range(len(positions))]
+    return render_template('index.html', title='Home', positions=positions, total_roi=total_roi, vector_pos=vector_pos)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated: 
         return redirect(url_for('main.index'))
     form = LoginForm()
     if form.validate_on_submit():

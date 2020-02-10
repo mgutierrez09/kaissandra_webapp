@@ -77,7 +77,7 @@ def create_user():
         'User': result,
     })
     response.status_code = 201
-    response.headers['Location'] = url_for('api.get_user', id=user.id)
+    #response.headers['Location'] = url_for('api.get_user', id=user.id)
     return response
 
 @bp.route('/users/<int:id>', methods=['PUT'])
@@ -111,6 +111,29 @@ def get_traders(id):
 #                                   'api.get_followers', id=id)
 #    return jsonify(data)
 
+@bp.route('/users/<int:id>/funds', methods=['POST', 'PUT'])
+@token_auth.login_required
+def add_funds(id):
+    """ Add funds to account """
+    data = request.get_json() or {}
+    user = User.query.get(id)
+    if not user:
+        return bad_request('User does not exist.')
+    if funds in data:
+        try:
+            funds = float(data['funds'])
+        except:
+            return bad_request('Funds must be a float number.')
+        user.budget += data['funds']
+        db.commit()
+        response = jsonify({
+            'message': 'Funds added. New budget: '+str(user.budget),
+        })
+        return response
+    else:
+        return bad_request('Funds must be included.')
+    
+
 @bp.route('/users/<int:id>/traders', methods=['POST', 'PUT'])
 @token_auth.login_required
 def add_trader(id):
@@ -143,7 +166,7 @@ def add_trader(id):
         usertrader.poslots = data['poslots']
 #        return bad_request('usertrader assotiation already exists. Case not im'+
 #                           'plemented yet')
-    
+    user.budget = data['budget']
     db.session.commit()
     user_sch = UserSchema()
     usertrader_sch = UserTraderSchema(many=True)
@@ -156,7 +179,7 @@ def add_trader(id):
         mess = 'User-trader association already exists. Parameters updated'
         status_code = 202
     else:
-        return bad_request('Wrong code when strategy added to trader. Check fields and try again')
+        return bad_request('Something happened when strategy added to trader. Check fields and try again')
     result_user = user_sch.dump(user)
     result_usertraders = usertrader_sch.dump(usertraders)
     response = jsonify({

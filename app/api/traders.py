@@ -763,11 +763,12 @@ def update_results(position):
     trader = Trader.query.filter_by(id=session.trader_id).first()
     splits = []
     for usertrader in trader.users:
-        usertrader.budget += usertrader.poslots*position.roiist*Config.LOT
+        usertrader.budget += usertrader.poslots*position.roiist*Config.LOT/100
         positionsplit = PositionSplit(userlots=usertrader.poslots)
         position.add_split(positionsplit)
         user = User.query.filter_by(id=usertrader.user_id).first()
         user.add_position(positionsplit)
+        user.budget += usertrader.poslots*position.roiist*Config.LOT/100
         splits.append(positionsplit)
     return splits
 
