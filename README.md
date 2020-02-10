@@ -37,6 +37,10 @@ Some usuful commands:
 - Run debugging mail server:
 
 `python -m smtpd -n -c DebuggingServer localhost:8025`
+
+- Get token:
+
+`http --auth <username>:<password> POST http://localhost:5000/api/tokens`
  
 ## Authors
 

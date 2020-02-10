@@ -43,6 +43,7 @@ def get_positions_user(id):
     })
 
 @bp.route('/users', methods=['POST'])
+@token_auth.login_required # temporary. Only admins are able to create new users
 def create_user():
     data = request.get_json() or {}
     user = User()
@@ -103,7 +104,10 @@ def modify_user(id):
 @bp.route('/users/<int:id>/traders', methods=['GET'])
 @token_auth.login_required
 def get_traders(id):
-    pass
+    response = jsonify({
+        'message': 'Not implemented.'
+    })
+    return response
 #    user = User.query.get_or_404(id)
 #    page = request.args.get('page', 1, type=int)
 #    per_page = min(request.args.get('per_page', 10, type=int), 100)
@@ -119,12 +123,12 @@ def add_funds(id):
     user = User.query.get(id)
     if not user:
         return bad_request('User does not exist.')
-    if funds in data:
+    if 'funds' in data:
         try:
             funds = float(data['funds'])
         except:
             return bad_request('Funds must be a float number.')
-        user.budget += data['funds']
+        user.budget += funds
         db.commit()
         response = jsonify({
             'message': 'Funds added. New budget: '+str(user.budget),
@@ -145,6 +149,14 @@ def add_trader(id):
     if 'tradername' not in data or 'budget' not in data or \
         'leverage' not in data or 'poslots' not in data:
         return bad_request('tradername, budget, leverage and poslots must be specified.')
+    try:
+        budget = float(data['budget'])
+        poslots = float(data['poslots'])
+        leverage = float(data['leverage'])
+    except:
+        return bad_request('Error in the inputs. Make sure they are float numbers.')
+    if user.budget<budget:
+         return bad_request('User has not enough budget. Please add first funds')
     trader = Trader.query.filter_by(tradername=data['tradername']).first()
     if trader == None:
         return bad_request('Trader does not exist.')
@@ -154,8 +166,8 @@ def add_trader(id):
     if usertrader == None:
         code = 1
         usertrader = UserTrader(user_id=id, trader_id=trader.id, 
-                                budget=data['budget'], leverage=data['leverage'], 
-                                poslots=data['poslots'])
+                                budget=budget, leverage=leverage, 
+                                poslots=poslots)
         usertrader.trader = trader
         user.add_trader(usertrader)
     else:
@@ -166,7 +178,7 @@ def add_trader(id):
         usertrader.poslots = data['poslots']
 #        return bad_request('usertrader assotiation already exists. Case not im'+
 #                           'plemented yet')
-    user.budget = data['budget']
+    # user.budget += float(data['budget'])
     db.session.commit()
     user_sch = UserSchema()
     usertrader_sch = UserTraderSchema(many=True)
