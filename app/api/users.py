@@ -42,9 +42,9 @@ def get_positions_user(id):
         'Splits':result_split
     })
 
-@bp.route('/users/<int:id>/create', methods=['POST'])
+@bp.route('/users/<int:id>/signup', methods=['POST'])
 @token_auth.login_required # temporary. Only admins are able to create new users
-def create_user():
+def create_user(id):
     admin_user = User.query.get(id)
     if not admin_user and not admin_user.isadmin:
         return bad_request('Only admins can create users')

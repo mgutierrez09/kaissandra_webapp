@@ -1,6 +1,6 @@
 # Kaissandra Webapp
 
-Server-side implemented in python for Kaissandra App.
+Server-side for Kaissandra App implemented in python.
 
 ## How to use
 
@@ -37,7 +37,7 @@ db.session.commit()
 
 1. Create new user remotely:
 
-`http POST http://localhost:5000/api/users username=<username> password=<password> email=<email> "Authorization:Bearer <token admin>"`
+`http POST http://localhost:5000/api/users/<admin id>/signup username=<username> password=<password> email=<email> "Authorization:Bearer <token admin>"`
 
 2. Get token:
 
@@ -49,7 +49,7 @@ db.session.commit()
 
 4. Add trader
 
-`http POST http://localhost:5000/api/users/<user id>/traders tradername=<trader name> budget=<budget> poslots=<volune> leverage=<leverage> "Authorization:Bearer <token admin>"`
+`http POST http://localhost:5000/api/users/<user id>/traders tradername=<trader name> budget=<budget> poslots=<volune> leverage=<leverage> "Authorization:Bearer <token user>"`
 
 Some usuful commands:
 
