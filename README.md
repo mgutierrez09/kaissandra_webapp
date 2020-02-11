@@ -32,6 +32,22 @@ db.session.add(u)
 db.session.commit()
 ```
 
+Create new user remotely:
+
+`http POST http://localhost:5000/api/users username=<username> password=<password> email=<email> "Authorization:Bearer <token admin>"`
+
+Get token:
+
+`http --auth <username>:<password> POST http://localhost:5000/api/tokens`
+
+Add funds:
+
+´http POST http://localhost:5000/api/users/<user id>/funds funds=<funds> "Authorization:Bearer <token user>"´
+
+Add trader
+
+`http POST http://localhost:5000/api/users/<user id>/traders tradername=<trader name> budget=<budget> poslots=<volune> leverage=<leverage> "Authorization:Bearer <token admin>"`
+
 Some usuful commands:
 
 - Run debugging mail server:
