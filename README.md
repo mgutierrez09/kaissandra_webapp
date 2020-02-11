@@ -1,10 +1,12 @@
 # Kaissandra Webapp
 
-* This is the readme.
+Server-side implemented in python for Kaissandra App.
 
 ## How to use
 
 ## Setup
+
+### Local setup
 
  First install packages in requirements.txt with `$pip install -r requirements.txt`. Visual cpp is required too and can be 
 downloaded from ___.
