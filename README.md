@@ -4,7 +4,7 @@
 
 ## How to use
 
-### Setup
+## Setup
 
  First install packages in requirements.txt with `$pip install -r requirements.txt`. Visual cpp is required too and can be 
 downloaded from ___.
@@ -31,20 +31,21 @@ u.check_password(<password>)
 db.session.add(u)
 db.session.commit()
 ```
+### Set up user remotely
 
-Create new user remotely:
+1. Create new user remotely:
 
 `http POST http://localhost:5000/api/users username=<username> password=<password> email=<email> "Authorization:Bearer <token admin>"`
 
-Get token:
+2. Get token:
 
 `http --auth <username>:<password> POST http://localhost:5000/api/tokens`
 
-Add funds:
+3. Add funds:
 
 ´http POST http://localhost:5000/api/users/<user id>/funds funds=<funds> "Authorization:Bearer <token user>"´
 
-Add trader
+4. Add trader
 
 `http POST http://localhost:5000/api/users/<user id>/traders tradername=<trader name> budget=<budget> poslots=<volune> leverage=<leverage> "Authorization:Bearer <token admin>"`
 
