@@ -45,7 +45,7 @@ db.session.commit()
 
 3. Add funds:
 
-´http POST http://localhost:5000/api/users/<user id>/funds funds=<funds> "Authorization:Bearer <token user>"´
+`http POST http://localhost:5000/api/users/<user id>/funds funds=<funds> "Authorization:Bearer <token user>"`
 
 4. Add trader
 
