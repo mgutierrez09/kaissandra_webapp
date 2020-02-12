@@ -444,6 +444,7 @@ class Session(db.Model):
     meanspread = db.Column(db.Float)
     trader_id = db.Column(db.Integer, db.ForeignKey('trader.id'))
     positions = db.relationship("Position", backref="session")
+    newparams = db.Column(db.Boolean, default=False) # indicates that new params have been set
     sessionstrategies = db.relationship("Strategy",
                                  secondary=SessionStratetgy, 
                                  backref="sessions")

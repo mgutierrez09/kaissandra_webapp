@@ -534,24 +534,35 @@ def get_params():
 def change_params():
     """ Change parameters of opened sessions """
     json_data = request.get_json() or {}
-    if len(params)==0:
+    
+    open_sessions = Session.query.filter_by(running=True)
+    
+
+    if len(open_sessions)==0:
         return jsonify({
             'message': "No session running. No parameters changed"
         })
     message = ""
-    for id in params.keys():
+    newparams = {}
+    for session in open_sessions:
+        id = session.id
+        newparams[id] = {}
         for json_key in json_data.keys():
-            if json_key == 'lots' or json_key == 'stoploss':#and type(json_data[json_key])==int
+            
+            if json_key == 'lots' or json_key == 'stoploss':
                 try:
                     value = float(json_data[json_key])
                 except:
                     return bad_request(json_key+" value is not a number")
-                if json_key in params[id]:
-                    params[id][json_key] = value
+                
+                # WARNING! Assume all strategies in session share parameters
+                strategy = session.sessionstrategies[-1]
+                setattr(strategy, json_key, value)
+                newparams[id][json_key] = value
+                if session.newparams:
                     message = message+"\nWARNING! Parameter "+str(json_key)+" already changed "+\
                           "but not updated. Value overwritten."
                 else:
-                    params[id].update({json_key:value})
                     message = message+"\nParamters updated"
             else:
                 message = message+"\nWARNING! Parameter "+str(json_key)+" not allowed or value is wrong. Skipped"
@@ -569,19 +580,21 @@ def params_enquired(id):
         return bad_request("Session does not exist")
     if not session.running:
         return bad_request("Session not running")
-    if id not in params:
-        json_return = jsonify({
-        'message': "Error. "+str(id)+" not in params",
-        'params': {},
-        })
-        return json_return
+    newparams = {}
+    if session.newparams:
+        # build new params
+        # WARNING! Assume all strategies in session share parameters
+        strategy = session.sessionstrategies[-1]
+        newparams['lots'] = strategy.poslots
+        newparams['stoploss'] = strategy.slthr
+        msg = "New params"
+        
+    else:
+        msg = "Params not updated"
     json_return = jsonify({
-        'message': "New params",
-        'params': params[id],
+        'message': msg,
+        'params': newparams,
     })
-    for key in list(params[id]):
-        del params[id][key]
-    #print(params)
     return json_return
 
 @bp.route('/traders/sessions/reset', methods=['PUT'])
