@@ -52,7 +52,7 @@ def get_session(id):
         'Session': result,
     })
     
-@bp.route('/traders/sessions', methods=['GET'])
+@bp.route('/traders/sessions/name', methods=['GET'])
 @token_auth.login_required
 def get_session_from_name():
     """  """
@@ -457,7 +457,23 @@ def open_session(id):
         'message': mess,
         'Session': result,
     })
+
+@bp.route('/traders/sessions/open', methods=['GET'])
+@token_auth.login_required
+def get_open_sessions():
+    """ Get id of all open sessions """
+    sessions = Session.query.filter_by(running=True)
+    sessions_id = []
+    for session in sessions:
+        sessions_id.append(session.id)
     
+    result = sessions_id
+    return jsonify({
+        'message': "Open Sessions id",
+        'Sessions': result,
+        'Number':len(sessions_id)
+    })
+
 @bp.route('/traders/sessions/<int:id>/close', methods=['PUT'])
 @token_auth.login_required
 def close_session(id):
@@ -474,6 +490,36 @@ def close_session(id):
     return jsonify({
         'message': "Session closed",
         'Session': result,
+    })
+
+@bp.route('/traders/sessions/close', methods=['PUT'])
+@token_auth.login_required
+def close_sessions():
+    """ Close all sessions but those included in json """
+    json_data = request.get_json() or {}
+    if 'all_but_ids' not in json_data:
+        ids = []
+    else:
+        try:
+            ids = [int(entry) for entry in json_data['all_but_ids'].split(',')]
+        except:
+            return bad_request("Error when parsing ids. Make sure they are ints and separated by ,")
+    sessions = Session.query.filter_by(running=True)
+    sessions_closed = []
+    for session in sessions:
+        if session.id not in ids:
+            session.running = False
+            session.dto = dt.datetime.utcnow()
+            sessions_closed.append(session.id)
+    if len(sessions_closed)==0:
+        return jsonify({
+        'message': "No Session closed",
+        })
+    db.session.commit()
+    result = sessions_closed
+    return jsonify({
+        'message': "Sessions closed",
+        'Sessions': result,
     })
     
 @bp.route('/traders/sessions/get_params', methods=['GET'])
