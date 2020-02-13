@@ -451,8 +451,8 @@ def open_session(id):
     db.session.commit()
     result = session_sch.dump(session)
     # update params structure
-    params[session.id] = {}
-    print(params)
+    # params[session.id] = {}
+    # print(params)
     return jsonify({
         'message': mess,
         'Session': result,
@@ -526,9 +526,10 @@ def close_sessions():
 @token_auth.login_required
 def get_params():
     """  """
-    return jsonify({
-        'params': params,
-    })
+    return bad_request("Not implemented yet.")
+    # return jsonify({
+    #     'params': params,
+    # })
 @bp.route('/traders/sessions/change_params', methods=['PUT'])
 @token_auth.login_required
 def change_params():
@@ -568,7 +569,7 @@ def change_params():
                 message = message+"\nWARNING! Parameter "+str(json_key)+" not allowed or value is wrong. Skipped"
     return jsonify({
         'message': message,
-        'params': params,
+        'params': newparams,
     })
     
 @bp.route('/traders/sessions/<int:id>/get_params', methods=['GET'])
@@ -583,7 +584,7 @@ def params_enquired(id):
     newparams = {}
     if session.newparams:
         # build new params
-        # WARNING! Assume all strategies in session share parameters
+        # WARNING! For now, assumed all strategies in session share parameters
         strategy = session.sessionstrategies[-1]
         newparams['lots'] = strategy.poslots
         newparams['stoploss'] = strategy.slthr
@@ -601,12 +602,13 @@ def params_enquired(id):
 @token_auth.login_required
 def reset_sessions():
     """ Change parameters of opened sessions """
-    for key in list(params):
-        del params[key]
-    message = "Sessions parameters reset"
-    return jsonify({
-        'message': message,
-    })
+    return bad_request("Depricated. Not in use anymore.")
+    # for key in list(params):
+    #     del params[key]
+    # message = "Sessions parameters reset"
+    # return jsonify({
+    #     'message': message,
+    # })
     
 @bp.route('/traders/sessions/<int:id>/positions/open', methods=['POST'])
 @token_auth.login_required
