@@ -290,8 +290,8 @@ def set_strategy(id):
     new_strategy = data[0]
 #    print("data")
 #    print(data)
-#    print("new_strategy")
-#    print(new_strategy)
+    # print("new_strategy")
+    # print(new_strategy)
     if new_strategy.strategyname not in [stra.strategyname for stra in list_strategies]:
         # create new strategy
         code = trader.add_strategy(new_strategy)
@@ -305,6 +305,8 @@ def set_strategy(id):
     # add session to strategy
     if sessionname != None:
         Session.query.filter_by(sessionname=sessionname).first().add_strategy(strategy)
+    print("Strategy slthr:")
+    print(strategy.slthr)
     db.session.commit()
     
     if code == 1:
@@ -513,7 +515,7 @@ def close_sessions():
             sessions_closed.append(session.id)
     if len(sessions_closed)==0:
         return jsonify({
-        'message': "No Session closed",
+        'message': "No Session open",
         })
     db.session.commit()
     result = sessions_closed
@@ -526,22 +528,29 @@ def close_sessions():
 @token_auth.login_required
 def get_params():
     """  """
-    return bad_request("Not implemented yet.")
-    # return jsonify({
-    #     'params': params,
-    # })
+    open_sessions = Session.query.filter_by(running=True).all()
+    if len(open_sessions)==0:
+        return jsonify({
+            'message': "No session running. Get parameters from strategy directly."
+        })
+    # WARNING: All open sessions are considered to have same strategies
+    strategy = open_sessions[-1].sessionstrategies[-1]
+    newparams = {'lots':strategy.poslots,'stoploss':strategy.slthr}
+    return jsonify({
+         'params': newparams,
+    })
 @bp.route('/traders/sessions/change_params', methods=['PUT'])
 @token_auth.login_required
 def change_params():
     """ Change parameters of opened sessions """
     json_data = request.get_json() or {}
     
-    open_sessions = Session.query.filter_by(running=True)
+    open_sessions = Session.query.filter_by(running=True).all()
     
 
     if len(open_sessions)==0:
         return jsonify({
-            'message': "No session running. No parameters changed"
+            'message': "No session running. No parameters changed."
         })
     message = ""
     newparams = {}
@@ -557,16 +566,22 @@ def change_params():
                     return bad_request(json_key+" value is not a number")
                 
                 # WARNING! Assume all strategies in session share parameters
-                strategy = session.sessionstrategies[-1]
-                setattr(strategy, json_key, value)
+                for strategy in session.sessionstrategies:
+                    if json_key == 'lots':
+                        strategy.poslots = value
+                    else:
+                        strategy.slthr = value
+                
                 newparams[id][json_key] = value
                 if session.newparams:
-                    message = message+"\nWARNING! Parameter "+str(json_key)+" already changed "+\
-                          "but not updated. Value overwritten."
+                    message = message+"WARNING! Parameter "+str(json_key)+" already changed "+\
+                          "but not updated. Value overwritten.\n"
                 else:
-                    message = message+"\nParamters updated"
+                    message = message+"Paramters updated\n"
             else:
-                message = message+"\nWARNING! Parameter "+str(json_key)+" not allowed or value is wrong. Skipped"
+                message = message+"WARNING! Parameter "+str(json_key)+" not allowed or value is wrong. Skipped\n"
+        session.newparams = True
+    db.session.commit()
     return jsonify({
         'message': message,
         'params': newparams,
@@ -589,7 +604,8 @@ def params_enquired(id):
         newparams['lots'] = strategy.poslots
         newparams['stoploss'] = strategy.slthr
         msg = "New params"
-        
+        session.newparams = False
+        db.session.commit()
     else:
         msg = "Params not updated"
     json_return = jsonify({

@@ -64,6 +64,18 @@ Some usuful commands:
 - request with token bearer:
 
 `http GET http://localhost:5000/api/users/1 "Authorization:Bearer pC1Nu9wwyNt8VCj1trWilFdFI276AcbS"` 
+
+- update open sessions parameters
+
+`http PUT http://localhost:5000/api/traders/sessions/change_params lots=0.05 stoploss=30 "Authorization:Bearer tVGT8/M8ybkJsmUqRQ1z+B2sMYJDt6TV"`
+
+- Enquire updated parameters from session
+
+`http GET http://localhost:5000/api/traders/sessions/269/get_params "Authorization:Bearer tVGT8/M8ybkJsmUqRQ1z+B2sMYJDt6TV"`
+
+- Close sessions
+
+`http PUT http://localhost:5000/api/traders/sessions/close`
  
 ## Author
 
