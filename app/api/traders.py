@@ -577,7 +577,7 @@ def change_params():
                     message = message+"WARNING! Parameter "+str(json_key)+" already changed "+\
                           "but not updated. Value overwritten.\n"
                 else:
-                    message = message+"Paramters updated\n"
+                    message = message+"Parameters updated\n"
             else:
                 message = message+"WARNING! Parameter "+str(json_key)+" not allowed or value is wrong. Skipped\n"
         session.newparams = True
