@@ -13,10 +13,10 @@ import pandas as pd
 
 def send_async_email(app, msg):
     with app.app_context():
-        #try:
-        mail.send(msg)
-        #except:
-        #    print("WARNING! Email not sent")
+        try:
+            mail.send(msg)
+        except:
+            print("WARNING! Email not sent")
 
 
 def send_email(subject, sender, recipients, text_body, html_body):
@@ -37,12 +37,10 @@ def send_pos_email(dict_pos, dt, event):
     recipients = Config.ADMINS
     if Config.MAIL_SERVER:
         send_email(subject, sender, recipients, body, html)
-    else:
-        print("Email sent from "+sender)
-        print("Receipients:")
-        print(recipients)
-        print("Subject: "+subject)
-        print("Body:")
-        print(body)
-    
-    
+#    else:
+    print("Email sent from "+sender)
+    print("Receipients:")
+    print(recipients)
+    print("Subject: "+subject)
+    print("Body:")
+    print(body)
