@@ -21,7 +21,7 @@ def index():
     positions = get_positions_from_splits(current_user)
     performance = calculate_performance_user(current_user, positions)
     #total_roi = sum([position.roiist for position in positions])
-    vector_pos = [i for i in range(len(current_user.positionsplits))]
+    vector_pos = [len(current_user.positionsplits)-i-1 for i in range(len(current_user.positionsplits))]
     return render_template('index.html', title='Home', positions=positions, performance=performance, vector_pos=vector_pos)
 
 @bp.route('/login', methods=['GET', 'POST'])

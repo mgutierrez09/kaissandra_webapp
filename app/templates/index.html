@@ -7,7 +7,7 @@
     <div><p>Deposits: {{'%0.2f'| format(current_user.deposit)}} €</p></div>
     <table>
       <tr>
-        <th> Total profits/losses (€)</th><th> Total ROI (%) </th>
+        <th> Total Returns (€)</th><th> Total ROI (%) </th>
       </tr>
       <tr>
         <td> {{'%0.2f'| format(current_user.budget-current_user.deposit)}} </td><td> {{'%0.2f'| format(performance['total_roi'])}} </td>
@@ -15,14 +15,14 @@
     </table>
     <table>
       <tr>
-        <th> Today's profits/losses (€)</th><th> Today's ROI (%) </th>
+        <th> Today's Returns (€)</th><th> Today's ROI (%) </th>
       </tr>
       <tr>
         <td> {{'%0.2f'| format(performance['dayly_roi'])}} </td><td> {{'%0.2f'| format(performance['dayly_roi'])}} </td>
       </tr>
     <table>
       <tr>
-        <th> This weeks's profits/losses (€)</th><th> This weeks's ROI (%) </th>
+        <th> This weeks's Returns (€)</th><th> This weeks's ROI (%) </th>
       </tr>
       <tr>
         <td> {{'%0.2f'| format(performance['weekly_return'])}} </td><td> {{'%0.2f'| format(performance['weekly_roi'])}} </td>
@@ -30,7 +30,7 @@
     </table>
     <table>
       <tr>
-        <th> This month's profits/losses (€)</th><th> This month's ROI (%) </th>
+        <th> This month's Returns (€)</th><th> This month's ROI (%) </th>
       </tr>
       <tr>
         <td> {{'%0.2f'| format(performance['monthly_return'])}} </td><td> {{'%0.2f'| format(performance['monthly_roi'])}} </td>
@@ -38,7 +38,7 @@
     </table>
     <table>
       <tr>
-        <th> YTD profits/losses (€)</th><th> YTD ROI (%) </th>
+        <th> YTD Returns (€)</th><th> YTD ROI (%) </th>
       </tr>
       <tr>
         <td> {{'%0.2f'| format(performance['yearly_return'])}} </td><td> {{'%0.2f'| format(performance['yearly_roi'])}} </td>
@@ -46,11 +46,11 @@
     </table>
     <table>
         <tr>
-          <th> Open Time </th><th> Close Time </th><th> Asset </th><th> Lots </th><th> GROI </th><th> ROI </th><th> Return </th>
+          <th> #Position </th><th> Open Time </th><th> Close Time </th><th> Asset </th><th> Lots </th><th> GROI </th><th> ROI </th><th> Return </th>
         </tr>
         {% for p in vector_pos %}
         <tr>
-          <td> {{positions[p].dtiist}} </td><td> {{positions[p].dtosoll}} </td><td> {{positions[p].asset}} </td>
+          <td> {{p+1}} </td><td> {{positions[p].dtiist}} </td><td> {{positions[p].dtosoll}} </td><td> {{positions[p].asset}} </td>
           <td> {{ '%0.2f'| format(current_user.positionsplits[p].userlots) }}  </td>
           <td> {{'%0.2f'| format(positions[p].groiist)}} </td><td> {{'%0.2f'| format(positions[p].roiist)}} </td>
           <td> {{'%0.2f'| format(current_user.positionsplits[p].userlots*positions[p].roiist*1000)}} </td>
