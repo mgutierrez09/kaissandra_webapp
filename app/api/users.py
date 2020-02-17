@@ -4,13 +4,13 @@ Created on Mon May 13 15:35:41 2019
 
 @author: mgutierrez
 """
-
+import datetime as dt
 from flask import jsonify, request, url_for, g
-from app import db
+from app import db, Config
 from app.api import bp
-#from app.tables_test import User, UserSchema
-from app.tables_test import (User, Trader, UserSchema, UserTrader, UserTraderSchema, 
-                        PositionSplitSchema, PositionUserSchema)
+from app.util import get_positions_from_splits
+from app.tables_test import (User, Trader, Position, UserSchema, UserTrader, PositionSplit,
+                        UserTraderSchema, PositionSplitSchema, PositionUserSchema)
 from app.api.errors import bad_request, unauthorized_request
 from app.api.auth import token_auth, basic_auth
 
@@ -272,3 +272,60 @@ def get_trader_user(id):
         })
         response.status_code = 202
         return response
+
+@bp.route('/users/<int:id>/add_splits', methods=['PUT'])
+@token_auth.login_required
+def add_splits_to_user(id):
+    """ Add splits to a user """
+    data = request.get_json() or {}
+    user = User.query.get(id)
+    if not user:
+        return bad_request('User does not exist.')
+    if 'starting' not in data:
+        return bad_request('starting field as starting date should be included')
+    if 'lots' not in data:
+        return bad_request('lots should be included')
+    try:
+        lots = float(data['lots'])
+    except:
+        return bad_request("Incorrect format for lots. Required: float")
+    
+    try:
+        init_date = dt.datetime.strptime(data['starting'],'%Y.%m.%d_%H:%M:%S')
+    except:
+        return bad_request("Incorrect format for starting. Required: %Y.%m.%d_%H:%M:%S")
+    # find positions from given date
+    positions = Position.query.all()
+    splits = get_positions_from_splits(user)
+    pos_id_splits = [split.id for split in splits]
+    
+    for p in positions:
+        try:
+            # check if dti is newwer than starting and if pos not yet in user splits
+            
+            #print(dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')-init_date>=dt.timedelta(0))
+            #print(p.dtiist)
+            pos_date = dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')
+            if pos_date-init_date>=dt.timedelta(0) and p.id not in pos_id_splits:
+                print(p.id)
+                # add position to user splits
+                positionsplit = PositionSplit(userlots=lots)
+                p.add_split(positionsplit)
+                user.add_position(positionsplit)
+                user.budget += lots*p.roiist*Config.LOT/100
+                print(user.budget)
+        except (TypeError,ValueError):
+            pass
+    print(init_date)
+    print(pos_id_splits)
+    db.session.commit()
+    user_sch = UserSchema()
+    result = user_sch.dump(user_sch)
+    response = jsonify({
+            'message': "Splits added.",
+            'user': result,
+    })
+    response.status_code = 202
+    return response
+
+

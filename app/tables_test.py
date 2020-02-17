@@ -526,7 +526,7 @@ class Position(db.Model):
     
     def __repr__(self):
         # TODO: Print position values in a table
-        return '<Position {}>'.format(self.__tablename__)
+        return '<Position {}>'.format(self.id)
     
     def check_attribute(self, attr):
         """ """
