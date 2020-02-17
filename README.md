@@ -33,7 +33,7 @@ u.check_password(<password>)
 db.session.add(u)
 db.session.commit()
 ```
-### Set up user remotely
+### Set up user through the API
 
 1. Create new user remotely:
 
@@ -76,6 +76,10 @@ Some usuful commands:
 - Close sessions
 
 `http PUT http://localhost:5000/api/traders/sessions/close` "Authorization:Bearer tVGT8/M8ybkJsmUqRQ1z+B2sMYJDt6TV"
+
+- Change trading parameters:
+
+`$ http PUT https://kaissandra-webapp.herokuapp.com/api/traders/sessions/change_params stoploss=<value> lots=<value> "Authorization:Bearer <token>"`
  
 ## Author
 
