@@ -547,7 +547,6 @@ def change_params():
     
     open_sessions = Session.query.filter_by(running=True).all()
     
-
     if len(open_sessions)==0:
         return jsonify({
             'message': "No session running. No parameters changed."

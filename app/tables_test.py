@@ -76,6 +76,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(128))
     datecreated = db.Column(db.DateTime, default=dt.datetime.utcnow)
     budget = db.Column(db.Float, default=0.0)
+    deposit = db.Column(db.Float, default=0.0)
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration = db.Column(db.DateTime)
     traders = db.relationship("UserTrader", back_populates="user")

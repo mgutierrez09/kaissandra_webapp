@@ -11,16 +11,18 @@ from flask import render_template, flash, redirect, url_for, request
 from app.main.forms import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.tables_test import User, Position
+from app.util import calculate_performance_user, get_positions_from_splits
 from werkzeug.urls import url_parse
 
 @bp.route('/', methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    positions = [Position.query.filter_by(id=split.position_id).first() for split in current_user.positionsplits]
-    total_roi = sum([position.roiist for position in positions])
-    vector_pos = [i for i in range(len(positions))]
-    return render_template('index.html', title='Home', positions=positions, total_roi=total_roi, vector_pos=vector_pos)
+    positions = get_positions_from_splits(current_user)
+    performance = calculate_performance_user(current_user, positions)
+    #total_roi = sum([position.roiist for position in positions])
+    vector_pos = [i for i in range(len(current_user.positionsplits))]
+    return render_template('index.html', title='Home', positions=positions, performance=performance, vector_pos=vector_pos)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():

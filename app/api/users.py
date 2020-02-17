@@ -126,15 +126,18 @@ def add_funds(id):
     user = User.query.get(id)
     if not user:
         return bad_request('User does not exist.')
+    # if not user.isadmin:
+    #     return bad_request('Petition denied. User is not admin')
     if 'funds' in data:
         try:
             funds = float(data['funds'])
         except:
             return bad_request('Funds must be a float number.')
         user.budget += funds
+        user.deposit += funds
         db.session.commit()
         response = jsonify({
-            'message': 'Funds added. New budget: '+str(user.budget),
+            'message': 'Funds added. New budget: '+str(user.budget)+" Total deposits: "+str(user.deposit),
         })
         return response
     else:
