@@ -294,7 +294,7 @@ def add_splits_to_user(id):
     
     try:
         init_date = dt.datetime.strptime(data['starting'],'%Y.%m.%d_%H:%M:%S')
-        end_date = dt.datetime.strptime(data['starting'],'%Y.%m.%d_%H:%M:%S')
+        end_date = dt.datetime.strptime(data['ending'],'%Y.%m.%d_%H:%M:%S')
     except:
         return bad_request("Incorrect format for dates. Required: %Y.%m.%d_%H:%M:%S")
     # find positions from given date
@@ -307,9 +307,14 @@ def add_splits_to_user(id):
             # check if dti is newwer than starting and if pos not yet in user splits
             
             #print(dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')-init_date>=dt.timedelta(0))
-            #print(p.dtiist)
+            print(p.dtiist)
             pos_date = dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')
             session = Session.query.filter_by(id=p.session_id).first()
+            print(pos_date-init_date>=dt.timedelta(0))
+            print(end_date-pos_date>=dt.timedelta(0))
+            print(p.id not in pos_id_splits)
+            print(session.sessiontype=='live')
+            print(not session.sessiontest)
             if pos_date-init_date>=dt.timedelta(0) and end_date-pos_date>=dt.timedelta(0) and \
                 p.id not in pos_id_splits and \
                 session.sessiontype=='live' and not session.sessiontest:
@@ -326,10 +331,12 @@ def add_splits_to_user(id):
     print(init_date)
     print(pos_id_splits)
     db.session.commit()
-    #user_sch = UserSchema()
-    #result = user_sch.dump(user_sch)
+    if len(added_pos_ids)>0:
+        mess = "Splits added."
+    else:
+        mess = "No splits added."
     response = jsonify({
-            'message': "Splits added.",
+            'message': mess,
             'pos_ids': added_pos_ids,
     })
     response.status_code = 202
