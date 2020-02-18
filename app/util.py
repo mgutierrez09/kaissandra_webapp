@@ -85,6 +85,6 @@ def get_positions_from_splits(user):
     """ Get positions from user splits """
     return [Position.query.filter_by(id=split.position_id).first() for split in user.positionsplits]
 
-def sort_positions(positions):
+def sort_positions(dti_positions, reverse=True):
     """ Sort positions from older to newer """
-    pass
+    return [i[0] for i in sorted(enumerate(dti_positions), key=lambda x:x[1], reverse=reverse)]

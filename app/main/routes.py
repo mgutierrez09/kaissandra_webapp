@@ -11,7 +11,7 @@ from flask import render_template, flash, redirect, url_for, request
 from app.main.forms import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.tables_test import User, Position
-from app.util import calculate_performance_user, get_positions_from_splits, get_positions_dti
+from app.util import calculate_performance_user, get_positions_from_splits, get_positions_dti, sort_positions
 from werkzeug.urls import url_parse
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -23,9 +23,11 @@ def index():
     dti_positions = get_positions_dti(positions)
     # get performance
     performance = calculate_performance_user(current_user, positions, dti_positions)
-    #total_roi = sum([position.roiist for position in positions])
-    vector_pos = [len(current_user.positionsplits)-i-1 for i in range(len(current_user.positionsplits))]
-    return render_template('index.html', title='Home', positions=positions, performance=performance, vector_pos=vector_pos)
+    # get indexes ordered
+    idx_ordered = sort_positions(dti_positions)
+    #vector_pos = [idx_ordered[-(i+1)] for i in range(len(idx_ordered))]
+    #print(vector_pos)
+    return render_template('index.html', title='Home', positions=positions, performance=performance, vector_pos=idx_ordered)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
