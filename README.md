@@ -4,7 +4,7 @@ Server-side for Kaissandra App implemented in python.
 
 ## Setup
 
-### Local setup
+### Local Setup
 
  First install packages in requirements.txt with `$pip install -r requirements.txt`. Visual cpp is required too and can be 
 downloaded from ___.
@@ -20,8 +20,6 @@ $ flask db migrate -m "message"
 $ flask db upgrade
 ```
 
-### Local Setup
-
 Create new username and password by getting into the terminal with $flask shell, and then run:
 
 ```python
@@ -33,7 +31,7 @@ u.check_password(<password>)
 db.session.add(u)
 db.session.commit()
 ```
-### Set Up User through the API
+### Remote Setup with API Calls
 
 1. Create new user remotely:
 
