@@ -435,6 +435,7 @@ class Session(db.Model):
     running = db.Column(db.Boolean, default=True)
     sessionname = db.Column(db.String(64), index=True, unique=True)
     sessiontype = db.Column(db.String(10)) # backtest/live
+    sessiontest = db.Column(db.Boolean, default=False)
     dti = db.Column(db.DateTime, default=dt.datetime.utcnow)
     dto = db.Column(db.DateTime)
     groisoll = db.Column(db.Float, default=0.0)

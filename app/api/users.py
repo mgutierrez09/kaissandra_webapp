@@ -10,7 +10,7 @@ from app import db, Config
 from app.api import bp
 from app.util import get_positions_from_splits
 from app.tables_test import (User, Trader, Position, UserSchema, UserTrader, PositionSplit,
-                        UserTraderSchema, PositionSplitSchema, PositionUserSchema)
+                        Session, UserTraderSchema, PositionSplitSchema, PositionUserSchema)
 from app.api.errors import bad_request, unauthorized_request
 from app.api.auth import token_auth, basic_auth
 
@@ -306,7 +306,9 @@ def add_splits_to_user(id):
             #print(dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')-init_date>=dt.timedelta(0))
             #print(p.dtiist)
             pos_date = dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')
-            if pos_date-init_date>=dt.timedelta(0) and p.id not in pos_id_splits:
+            session = Session.query.filter_by(id=p.session_id).first()
+            if pos_date-init_date>=dt.timedelta(0) and p.id not in pos_id_splits and \
+                session.sessiontype=='live' and not session.sessiontest:
                 print(p.id)
                 # add position to user splits
                 positionsplit = PositionSplit(userlots=lots)
