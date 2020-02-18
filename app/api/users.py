@@ -310,11 +310,11 @@ def add_splits_to_user(id):
             print(p.dtiist)
             pos_date = dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')
             session = Session.query.filter_by(id=p.session_id).first()
-            print(pos_date-init_date>=dt.timedelta(0))
-            print(end_date-pos_date>=dt.timedelta(0))
-            print(p.id not in pos_id_splits)
-            print(session.sessiontype=='live')
-            print(not session.sessiontest)
+            # print(pos_date-init_date>=dt.timedelta(0))
+            # print(end_date-pos_date>=dt.timedelta(0))
+            # print(p.id not in pos_id_splits)
+            # print(session.sessiontype=='live')
+            # print(not session.sessiontest)
             if pos_date-init_date>=dt.timedelta(0) and end_date-pos_date>=dt.timedelta(0) and \
                 p.id not in pos_id_splits and \
                 session.sessiontype=='live' and not session.sessiontest:
@@ -328,8 +328,8 @@ def add_splits_to_user(id):
                 added_pos_ids.append(p.id)
         except (TypeError,ValueError):
             pass
-    print(init_date)
-    print(pos_id_splits)
+    # print(init_date)
+    # print(pos_id_splits)
     db.session.commit()
     if len(added_pos_ids)>0:
         mess = "Splits added."

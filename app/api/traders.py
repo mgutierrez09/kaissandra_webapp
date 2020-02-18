@@ -836,7 +836,7 @@ def update_results(position):
     """ Set splits corresponding to users for the position """
     session = Session.query.filter_by(id=position.session_id).first()
     session.update(position)
-    if session.sessiontype == 'live':
+    if session.sessiontype == 'live' and not session.sessiontest:
         trader = Trader.query.filter_by(id=session.trader_id).first()
         splits = []
         for usertrader in trader.users:
