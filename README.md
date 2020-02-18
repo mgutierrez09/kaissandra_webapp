@@ -2,8 +2,6 @@
 
 Server-side for Kaissandra App implemented in python.
 
-## How to use
-
 ## Setup
 
 ### Local setup
@@ -22,6 +20,8 @@ $ flask db migrate -m "message"
 $ flask db upgrade
 ```
 
+### Local Setup
+
 Create new username and password by getting into the terminal with $flask shell, and then run:
 
 ```python
@@ -33,7 +33,7 @@ u.check_password(<password>)
 db.session.add(u)
 db.session.commit()
 ```
-### Set up user through the API
+### Set Up User through the API
 
 1. Create new user remotely:
 
@@ -50,6 +50,8 @@ db.session.commit()
 4. Add trader
 
 `http POST http://localhost:5000/api/users/<user id>/traders tradername=<trader name> budget=<budget> poslots=<volune> leverage=<leverage> "Authorization:Bearer <token user>"`
+
+## How to use
 
 Some usuful commands:
 
