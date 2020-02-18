@@ -298,7 +298,7 @@ def add_splits_to_user(id):
     positions = Position.query.all()
     splits = get_positions_from_splits(user)
     pos_id_splits = [split.id for split in splits]
-    
+    added_pos_ids = []
     for p in positions:
         try:
             # check if dti is newwer than starting and if pos not yet in user splits
@@ -316,16 +316,17 @@ def add_splits_to_user(id):
                 user.add_position(positionsplit)
                 user.budget += lots*p.roiist*Config.LOT/100
                 print(user.budget)
+                added_pos_ids.append(p.id)
         except (TypeError,ValueError):
             pass
     print(init_date)
     print(pos_id_splits)
     db.session.commit()
-    user_sch = UserSchema()
-    result = user_sch.dump(user_sch)
+    #user_sch = UserSchema()
+    #result = user_sch.dump(user_sch)
     response = jsonify({
             'message': "Splits added.",
-            'user': result,
+            'pos_ids': added_pos_ids,
     })
     response.status_code = 202
     return response

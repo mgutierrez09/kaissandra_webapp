@@ -1,4 +1,4 @@
-# Kaissandra Webapp
+# Kaissandra Webapp :ok_hand:
 
 Server-side for Kaissandra App implemented in python.
 

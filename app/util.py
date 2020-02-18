@@ -9,13 +9,8 @@ import datetime as dt
 from app import Config
 from app.tables_test import Position
 
-def calculate_performance_user(user, positions):
+def calculate_performance_user(user, positions, dti_positions):
     """ Calculate KPIs user. """
-    #positions = get_positions_from_splits(user)
-    # calculate total ROI
-    #total_roi = sum([position.roiist for position in positions])
-    # get datetimes of positions
-    dti_positions = get_positions_dti(positions)
     # get now
     now = dt.datetime.now()
     # get current day
@@ -89,3 +84,7 @@ def get_positions_dti(positions):
 def get_positions_from_splits(user):
     """ Get positions from user splits """
     return [Position.query.filter_by(id=split.position_id).first() for split in user.positionsplits]
+
+def sort_positions(positions):
+    """ Sort positions from older to newer """
+    pass
