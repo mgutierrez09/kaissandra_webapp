@@ -283,6 +283,8 @@ def add_splits_to_user(id):
         return bad_request('User does not exist.')
     if 'starting' not in data:
         return bad_request('starting field as starting date should be included')
+    if 'ending' not in data:
+        return bad_request('ending field as starting date should be included')
     if 'lots' not in data:
         return bad_request('lots should be included')
     try:
@@ -292,8 +294,9 @@ def add_splits_to_user(id):
     
     try:
         init_date = dt.datetime.strptime(data['starting'],'%Y.%m.%d_%H:%M:%S')
+        end_date = dt.datetime.strptime(data['starting'],'%Y.%m.%d_%H:%M:%S')
     except:
-        return bad_request("Incorrect format for starting. Required: %Y.%m.%d_%H:%M:%S")
+        return bad_request("Incorrect format for dates. Required: %Y.%m.%d_%H:%M:%S")
     # find positions from given date
     positions = Position.query.all()
     splits = get_positions_from_splits(user)
@@ -307,7 +310,8 @@ def add_splits_to_user(id):
             #print(p.dtiist)
             pos_date = dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')
             session = Session.query.filter_by(id=p.session_id).first()
-            if pos_date-init_date>=dt.timedelta(0) and p.id not in pos_id_splits and \
+            if pos_date-init_date>=dt.timedelta(0) and end_date-pos_date>=dt.timedelta(0) and \
+                p.id not in pos_id_splits and \
                 session.sessiontype=='live' and not session.sessiontest:
                 print(p.id)
                 # add position to user splits

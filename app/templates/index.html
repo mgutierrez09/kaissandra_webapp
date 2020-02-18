@@ -10,10 +10,10 @@
             <th> Total </th>
           </tr>
       <tr>
-        <th> Yield (€)</th><th> ROI (%) </th>
+        <th> Yield </th><th> ROI </th>
       </tr>
       <tr>
-        <td> {{'%0.2f'| format(current_user.budget-current_user.deposit)}} </td><td> {{'%0.2f'| format(performance['total_roi'])}} </td>
+        <td> {{'%0.2f'| format(current_user.budget-current_user.deposit)}} € </td><td> {{'%0.2f'| format(performance['total_roi'])}} %</td>
       </tr>
     </table>
     <table>
@@ -21,20 +21,20 @@
             <th> Today </th>
           </tr>
       <tr>
-        <th> Yield (€)</th><th> ROI (%) </th>
+        <th> Yield </th><th> ROI </th>
       </tr>
       <tr>
-        <td> {{'%0.2f'| format(performance['dayly_return'])}} </td><td> {{'%0.2f'| format(performance['dayly_roi'])}} </td>
+        <td> {{'%0.2f'| format(performance['dayly_return'])}} € </td><td> {{'%0.2f'| format(performance['dayly_roi'])}} %</td>
       </tr>
     <table>
         <tr>
             <th> This week </th>
           </tr>
       <tr>
-        <th> Yield (€)</th><th> ROI (%) </th>
+        <th> Yield </th><th> ROI </th>
       </tr>
       <tr>
-        <td> {{'%0.2f'| format(performance['weekly_return'])}} </td><td> {{'%0.2f'| format(performance['weekly_roi'])}} </td>
+        <td> {{'%0.2f'| format(performance['weekly_return'])}} € </td><td> {{'%0.2f'| format(performance['weekly_roi'])}} %</td>
       </tr>
     </table>
     <table>
@@ -42,10 +42,10 @@
             <th> This month </th>
           </tr>
       <tr>
-        <th> Yield (€)</th><th> ROI (%) </th>
+        <th> Yield</th><th> ROI </th>
       </tr>
       <tr>
-        <td> {{'%0.2f'| format(performance['monthly_return'])}} </td><td> {{'%0.2f'| format(performance['monthly_roi'])}} </td>
+        <td> {{'%0.2f'| format(performance['monthly_return'])}} € </td><td> {{'%0.2f'| format(performance['monthly_roi'])}} %</td>
       </tr>
     </table>
     <table>
@@ -53,16 +53,13 @@
             <th> YTD </th>
           </tr>
       <tr>
-        <th> Yield (€)</th><th> ROI (%) </th>
+        <th> Yield </th><th> ROI</th>
       </tr>
       <tr>
-        <td> {{'%0.2f'| format(performance['yearly_return'])}} </td><td> {{'%0.2f'| format(performance['yearly_roi'])}} </td>
+        <td> {{'%0.2f'| format(performance['yearly_return'])}} € </td><td> {{'%0.2f'| format(performance['yearly_roi'])}} %</td>
       </tr>
     </table>
     <table>
-        <tr>
-            <th> Total </th>
-          </tr>
         <tr>
           <th> #Position </th><th> Open Time </th><th> Close Time </th><th> Asset </th><th> Lots </th><th> GROI (%) </th><th> ROI (%) </th><th> Yield (€) </th>
         </tr>

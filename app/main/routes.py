@@ -25,8 +25,6 @@ def index():
     performance = calculate_performance_user(current_user, positions, dti_positions)
     # get indexes ordered
     idx_ordered = sort_positions(dti_positions)
-    #vector_pos = [idx_ordered[-(i+1)] for i in range(len(idx_ordered))]
-    #print(vector_pos)
     return render_template('index.html', title='Home', positions=positions, performance=performance, vector_pos=idx_ordered)
 
 @bp.route('/login', methods=['GET', 'POST'])
