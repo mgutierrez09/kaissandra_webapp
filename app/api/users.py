@@ -10,7 +10,7 @@ from app import db, Config
 from app.api import bp
 from app.util import get_positions_from_splits
 from app.tables_test import (User, Trader, Position, UserSchema, UserTrader, PositionSplit,
-                        Session, UserTraderSchema, PositionSplitSchema, PositionUserSchema)
+                        Deposit, Session, UserTraderSchema, PositionSplitSchema, PositionUserSchema)
 from app.api.errors import bad_request, unauthorized_request
 from app.api.auth import token_auth, basic_auth
 
@@ -135,6 +135,8 @@ def add_funds(id):
             return bad_request('Funds must be a float number.')
         user.budget += funds
         user.deposit += funds
+        deposit = Deposit(volume=funds)
+        user.add_deposit(deposit)
         db.session.commit()
         response = jsonify({
             'message': 'Funds added. New budget: '+str(user.budget)+" Total deposits: "+str(user.deposit),

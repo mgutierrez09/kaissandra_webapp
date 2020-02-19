@@ -75,6 +75,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     datecreated = db.Column(db.DateTime, default=dt.datetime.utcnow)
+    deposits = db.relationship("Deposit", backref="user")
     budget = db.Column(db.Float, default=0.0)
     deposit = db.Column(db.Float, default=0.0)
     token = db.Column(db.String(32), index=True, unique=True)
@@ -144,6 +145,15 @@ class User(db.Model, UserMixin):
             #db.session.commit()
             return 1
         else:
+            return 0
+
+    def add_deposit(self, deposit):
+        """  """
+        if deposit not in self.deposits:
+            self.deposits.append(deposit)
+            #db.session.commit()
+            return 1
+        else:
             return 0 
         
     def set_attributes(self, data):
@@ -195,6 +205,13 @@ class User(db.Model, UserMixin):
         except:
             return
         return User.query.get(id)
+
+class Deposit(db.Model):
+    __tablename__ = 'deposit'
+    id = db.Column(db.Integer, primary_key=True)
+    volume = db.Column(db.Float)
+    datetime = db.Column(db.DateTime, default=dt.datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
 class Trader(db.Model):
     __tablename__ = 'trader'
