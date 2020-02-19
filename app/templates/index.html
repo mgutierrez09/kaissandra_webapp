@@ -2,13 +2,13 @@
 
 {% block content %}
     <h1>Hi, {{ current_user.username }}!</h1>
+    <h2> Account State </h2>
     <div><p>Balance: {{'%0.2f'| format(current_user.budget)}} €</p></div>
     <div><p>Equity: {{'%0.2f'| format(current_user.budget)}} €</p></div>
     <div><p>Deposits: {{'%0.2f'| format(current_user.deposit)}} €</p></div>
+    <h2> Performance </h2>
+    <h3> Total </h3>
     <table>
-        <tr>
-            <th> Total </th>
-          </tr>
       <tr>
         <th> Yield </th><th> ROI </th>
       </tr>
@@ -16,20 +16,17 @@
         <td> {{'%0.2f'| format(current_user.budget-current_user.deposit)}} € </td><td> {{'%0.2f'| format(performance['total_roi'])}} %</td>
       </tr>
     </table>
+    <h3> Today </h3>
     <table>
-        <tr>
-            <th> Today </th>
-          </tr>
       <tr>
         <th> Yield </th><th> ROI </th>
       </tr>
       <tr>
         <td> {{'%0.2f'| format(performance['dayly_return'])}} € </td><td> {{'%0.2f'| format(performance['dayly_roi'])}} %</td>
       </tr>
+    </table>
+    <h3> This Week </h3>
     <table>
-        <tr>
-            <th> This week </th>
-          </tr>
       <tr>
         <th> Yield </th><th> ROI </th>
       </tr>
@@ -37,10 +34,8 @@
         <td> {{'%0.2f'| format(performance['weekly_return'])}} € </td><td> {{'%0.2f'| format(performance['weekly_roi'])}} %</td>
       </tr>
     </table>
+    <h3> This month </h3>
     <table>
-        <tr>
-            <th> This month </th>
-          </tr>
       <tr>
         <th> Yield</th><th> ROI </th>
       </tr>
@@ -48,10 +43,8 @@
         <td> {{'%0.2f'| format(performance['monthly_return'])}} € </td><td> {{'%0.2f'| format(performance['monthly_roi'])}} %</td>
       </tr>
     </table>
+    <h3> YTD </h3>
     <table>
-        <tr>
-            <th> YTD </th>
-          </tr>
       <tr>
         <th> Yield </th><th> ROI</th>
       </tr>
@@ -59,9 +52,10 @@
         <td> {{'%0.2f'| format(performance['yearly_return'])}} € </td><td> {{'%0.2f'| format(performance['yearly_roi'])}} %</td>
       </tr>
     </table>
+    <h2> Positions </h2>
     <table>
         <tr>
-          <th> #Position </th><th> Open Time </th><th> Close Time </th><th> Asset </th><th> Lots </th><th> GROI (%) </th><th> ROI (%) </th><th> Yield (€) </th>
+          <th> #Position </th><th> Open Time </th><th> Close Time </th><th> Asset </th><th> Size (lots) </th><th> GROI (%) </th><th> ROI (%) </th><th> Yield (€) </th>
         </tr>
         {% for p in vector_pos %}
         <tr>

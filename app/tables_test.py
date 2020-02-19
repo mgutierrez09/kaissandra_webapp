@@ -212,6 +212,9 @@ class Deposit(db.Model):
     volume = db.Column(db.Float)
     datetime = db.Column(db.DateTime, default=dt.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return '<Deposit {}>'.format(self.id)
     
 class Trader(db.Model):
     __tablename__ = 'trader'
