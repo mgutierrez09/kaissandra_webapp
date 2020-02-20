@@ -2,10 +2,13 @@
 
 {% block content %}
     <h1>Hi, {{ current_user.username }}!</h1>
+    <div class="container">
     <h2> Account State </h2>
     <div><p>Balance: {{'%0.2f'| format(current_user.budget)}} €</p></div>
     <div><p>Equity: {{'%0.2f'| format(current_user.budget)}} €</p></div>
     <div><p>Deposits: {{'%0.2f'| format(current_user.deposit)}} €</p></div>
+    </div>
+    <div class="container">
     <h2> Performance </h2>
     <h3> Total </h3>
     <table>
@@ -52,6 +55,8 @@
         <td> {{'%0.2f'| format(performance['yearly_return'])}} € </td><td> {{'%0.2f'| format(performance['yearly_roi'])}} %</td>
       </tr>
     </table>
+    </div>
+    <div class="container">
     <h2> Positions </h2>
     <table>
         <tr>
@@ -66,4 +71,5 @@
         </tr>
         {% endfor %}    
     </table>
+    </div>
 {% endblock %}

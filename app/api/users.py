@@ -31,6 +31,8 @@ def get_user(id):
 @token_auth.login_required
 def get_positions_user(id):
     """  """
+    if g.current_user.id !=id:
+        return unauthorized_request("User ID does not correspond to user credentials. Access denied")
     user = User.query.filter_by(id=id).first()
     result_split = PositionSplitSchema(many=True).dump(user.positionsplits)
     positions = []
@@ -45,9 +47,8 @@ def get_positions_user(id):
 @bp.route('/users/<int:id>/signup', methods=['POST'])
 @token_auth.login_required # temporary. Only admins are able to create new users
 def create_user(id):
-    admin_user = User.query.get(id)
-    if not admin_user and not admin_user.isadmin:
-        return bad_request('Only admins can create users')
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     data = request.get_json() or {}
     user = User()
     # Validate fields
@@ -88,6 +89,8 @@ def create_user(id):
 @token_auth.login_required
 def modify_user(id):
     """  """
+    if g.current_user.id !=id:
+        return unauthorized_request("User ID does not correspond to user credentials. Access denied")
     user = User.query.get(id)
     if user == None:
         return bad_request('User does not exist.')
@@ -122,6 +125,8 @@ def modify_user(id):
 @token_auth.login_required
 def add_funds(id):
     """ Add funds to account """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     data = request.get_json() or {}
     user = User.query.get(id)
     if not user:
@@ -149,6 +154,8 @@ def add_funds(id):
 @bp.route('/users/<int:id>/traders', methods=['POST'])
 @token_auth.login_required
 def add_trader2user(id):
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     user = User.query.get(id)
     if not user:
         return bad_request('User does not exist.')
@@ -213,6 +220,9 @@ def add_trader2user(id):
 @bp.route('/users/<int:id>/traders', methods=['PUT'])
 @token_auth.login_required
 def update_trader_user(id):
+    """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     user = User.query.get(id)
     if not user:
         return bad_request('User does not exist.')
@@ -248,6 +258,8 @@ def update_trader_user(id):
 @token_auth.login_required
 def get_trader_user(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     user = User.query.get(id)
     if not user:
         return bad_request('User does not exist.')
@@ -279,6 +291,8 @@ def get_trader_user(id):
 @token_auth.login_required
 def add_splits_to_user(id):
     """ Add splits to a user """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     data = request.get_json() or {}
     user = User.query.get(id)
     if not user:

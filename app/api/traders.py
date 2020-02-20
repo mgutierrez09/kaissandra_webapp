@@ -111,6 +111,8 @@ def get_strategy(id):
 @token_auth.login_required
 def get_strategies_trader(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     str_sch = StrategySchema(many=True)
     trader = Trader.query.filter_by(id=id).first()
     strategies = trader.strategies
@@ -129,6 +131,8 @@ def get_strategies_trader(id):
 @token_auth.login_required
 def get_networks_from_strategy(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     strategy = Strategy.query.filter_by(id=id).first()
     return jsonify({'networks':NetworkSchema(many=True).dump(strategy.networks)})
 
@@ -143,6 +147,8 @@ def get_network(id):
 @token_auth.login_required
 def get_network_from_name():
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     json_data = request.get_json() or {}
     if 'networkname' not in json_data:
         return bad_request('networkname must be included.')
@@ -159,6 +165,8 @@ def get_assets(id):
 @token_auth.login_required
 def get_positionsplit(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     positionsplit = PositionSplit.query.filter_by(id=id).first()
     if positionsplit == None:
         bad_request('PositionSplit does not exist.')
@@ -171,6 +179,8 @@ def get_positionsplit(id):
 @token_auth.login_required
 def get_position(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     position = Position.query.filter_by(id=id).first()
     result = PositionSchema().dump(position)
     #print(result)
@@ -193,6 +203,8 @@ def get_position(id):
 @token_auth.login_required
 def get_positions_from_session(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     session = Session.query.filter_by(id=id).first()
     if session == None:
         return bad_request('Session does not exist')
@@ -219,6 +231,8 @@ def get_positions_from_session(id):
 @bp.route('/traders', methods=['POST','PUT'])
 @token_auth.login_required
 def set_trader():
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     data = request.get_json() or {}
 #    if request.method == 'GET':
 #        pass
@@ -266,6 +280,8 @@ def set_trader():
 @token_auth.login_required
 def set_strategy(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     trader = Trader.query.get(id)
     if not trader:
         return bad_request('Trader does not exist.')
@@ -331,6 +347,8 @@ def set_strategy(id):
 @token_auth.login_required
 def set_network():
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     json_data = request.get_json() or {}
     if 'strategy' not in json_data:
         return bad_request('strategy must be included.')
@@ -387,6 +405,8 @@ def set_network():
 @token_auth.login_required
 def set_assets(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     trader = Trader.query.get(id)
     if not trader:
         return bad_request('Trader does not exist.')
@@ -431,6 +451,8 @@ def set_assets(id):
 @token_auth.login_required
 def open_session(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     trader = Trader.query.get(id)
     if trader == None:
         return bad_request("Trader does not exist")
@@ -464,6 +486,8 @@ def open_session(id):
 @token_auth.login_required
 def get_open_sessions():
     """ Get id of all open sessions """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     sessions = Session.query.filter_by(running=True)
     sessions_id = []
     for session in sessions:
@@ -480,6 +504,8 @@ def get_open_sessions():
 @token_auth.login_required
 def close_session(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     session = Session.query.filter_by(id=id).first()
     if session == None:
         return bad_request("Session does not exist")
@@ -498,6 +524,8 @@ def close_session(id):
 @token_auth.login_required
 def close_sessions():
     """ Close all sessions but those included in json """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     json_data = request.get_json() or {}
     if 'all_but_ids' not in json_data:
         ids = []
@@ -528,6 +556,8 @@ def close_sessions():
 @token_auth.login_required
 def get_params():
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     open_sessions = Session.query.filter_by(running=True).all()
     if len(open_sessions)==0:
         return jsonify({
@@ -543,6 +573,8 @@ def get_params():
 @token_auth.login_required
 def change_params():
     """ Change parameters of opened sessions """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     json_data = request.get_json() or {}
     
     open_sessions = Session.query.filter_by(running=True).all()
@@ -590,6 +622,8 @@ def change_params():
 @token_auth.login_required
 def params_enquired(id):
     """ Route for parameters enquiry from trader """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     session = Session.query.filter_by(id=id).first()
     if session == None:
         return bad_request("Session does not exist")
@@ -629,6 +663,8 @@ def reset_sessions():
 @token_auth.login_required
 def open_position(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     session = Session.query.get(id)
     if session == None:
         return bad_request("Session does not exist.")
@@ -691,6 +727,8 @@ def open_position(id):
 @token_auth.login_required
 def close_position(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     json_data = request.get_json() or {}
     if 'dtosoll' not in json_data:
         return bad_request('dtosoll must be included.')
@@ -741,7 +779,8 @@ def close_position(id):
 @token_auth.login_required
 def upload_position(id):
     """ Upload position evolution over time to DB """
-    time.sleep(1)
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     if 'file' not in request.files:
         bad_request("File file not included")
     file = request.files['file']
@@ -762,6 +801,8 @@ def upload_position(id):
 @token_auth.login_required
 def extend_position(id):
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     json_data = request.get_json() or {}
     position = Position.query.filter_by(id=id).first()
     if position == None:
@@ -816,13 +857,13 @@ def extend_position(id):
 #    db.session.commit()
 #    return jsonify({'Output': 'Trader deleted'})
 
-def get_trader(id):
-    """  """
-    trader_sch = TraderSchema()
-    trader = Trader.query.get_or_404(id)
-    # Serialize the queryset
-    result = trader_sch.dump(trader)
-    return jsonify({'trader': result})
+# def get_trader(id):
+#     """  """
+#     trader_sch = TraderSchema()
+#     trader = Trader.query.get_or_404(id)
+#     # Serialize the queryset
+#     result = trader_sch.dump(trader)
+#     return jsonify({'trader': result})
 
 #def get_traders():
 #    """  """
