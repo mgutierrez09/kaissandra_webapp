@@ -144,7 +144,7 @@ def add_funds(id):
         user.add_deposit(deposit)
         db.session.commit()
         response = jsonify({
-            'message': 'Funds added. New budget: '+str(user.budget)+" Total deposits: "+str(user.deposit),
+            'message': 'Funds added. New budget: '+str(user.budget)+" Total deposited funds: "+str(user.deposit),
         })
         return response
     else:

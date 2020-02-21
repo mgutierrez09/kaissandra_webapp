@@ -528,6 +528,7 @@ class Position(db.Model):
     roisoll = db.Column(db.Float, default=0.0)
     roiist = db.Column(db.Float, default=0.0)
     returns = db.Column(db.Float, default=0.0)
+    swap = db.Column(db.Float, default=0.0) # swap in pips
     espread = db.Column(db.Float)
     spread = db.Column(db.Float)
     lots = db.Column(db.Float)
