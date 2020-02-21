@@ -78,6 +78,7 @@ class User(db.Model, UserMixin):
     deposits = db.relationship("Deposit", backref="user")
     budget = db.Column(db.Float, default=0.0)
     deposit = db.Column(db.Float, default=0.0)
+    userevents = db.relationship("Event", backref="user")
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration = db.Column(db.DateTime)
     traders = db.relationship("UserTrader", back_populates="user")
@@ -190,6 +191,12 @@ class User(db.Model, UserMixin):
     def revoke_token(self):
         self.token_expiration = dt.datetime.utcnow() - dt.timedelta(seconds=1)
 
+    def log_event(self, log):
+        """ Log an event """
+        self.userevents.append(Event(log=log))
+        db.session.commit()
+        return True
+
     @staticmethod
     def check_token(token):
         user = User.query.filter_by(token=token).first()
@@ -215,6 +222,13 @@ class Deposit(db.Model):
 
     def __repr__(self):
         return '<Deposit {}>'.format(self.id)
+
+class Event(db.Model):
+    __tablename__ = 'event'
+    id = db.Column(db.Integer, primary_key=True)
+    datetime = db.Column(db.DateTime, default=dt.datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    log = db.Column(db.String(64))
     
 class Trader(db.Model):
     __tablename__ = 'trader'
