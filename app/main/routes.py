@@ -11,16 +11,41 @@ from flask import render_template, flash, redirect, url_for, request
 from app.main.forms import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.tables_test import User, Position
+from app.util import calculate_performance_user, get_positions_from_splits, get_positions_dti, sort_positions
 from werkzeug.urls import url_parse
 
 @bp.route('/', methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    positions = [Position.query.filter_by(id=split.position_id).first() for split in current_user.positionsplits]
-    total_roi = sum([position.roiist for position in positions])
-    vector_pos = [i for i in range(len(positions))]
-    return render_template('index.html', title='Home', positions=positions, total_roi=total_roi, vector_pos=vector_pos)
+    positions = get_positions_from_splits(current_user)
+    # get datetimes of positions
+    dti_positions = get_positions_dti(positions)
+    # get performance
+    performance = calculate_performance_user(current_user, positions, dti_positions)
+    # get indexes ordered
+    idx_ordered = sort_positions(dti_positions)
+    # log login event
+    current_user.log_event("LOGIN")
+    # render page
+    return render_template('index.html', title='Home', performance=performance, vector_pos=idx_ordered)
+
+@bp.route('/profile/<username>', methods=['GET'])
+@login_required
+def profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('profile.html', title='Profile')
+
+@bp.route('/dashboard/<username>', methods=['GET'])
+@login_required
+def dashboard(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    positions = get_positions_from_splits(user)
+    # get datetimes of positions
+    dti_positions = get_positions_dti(positions)
+    # get indexes ordered
+    idx_ordered = sort_positions(dti_positions)
+    return render_template('dashboard.html', title=username+"'s Dashboard", positions=positions, vector_pos=idx_ordered)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -36,10 +61,12 @@ def login():
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('main.index')
+        current_user.log_event("LOGIN")
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
 @bp.route('/logout')
 def logout():
+    current_user.log_event("LOGOUT")
     logout_user()
     return redirect(url_for('main.index'))

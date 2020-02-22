@@ -2,18 +2,58 @@
 
 {% block content %}
     <h1>Hi, {{ current_user.username }}!</h1>
-    <div><p>Balance: {{current_user.budget}}</p></div>
-    <div><p>Equity: {{current_user.budget}}</p></div>
-    <div><p>Return of Investment: {{total_roi}}%</p></div>
+    <div class="container">
+    <h2> Account State </h2>
+    <div><p>Balance: {{'%0.2f'| format(current_user.budget)}} €</p></div>
+    <div><p>Equity: {{'%0.2f'| format(current_user.budget)}} €</p></div>
+    <div><p>Deposits: {{'%0.2f'| format(current_user.deposit)}} €</p></div>
+    </div>
+    <div class="container">
+    <h2> Performance </h2>
+    <h3> Total </h3>
     <table>
-        <tr>
-          <th> Open Time </th><th> Close Time </th><th> Asset </th><th> Lots </th><th> GROI </th><th> ROI </th><th> Return </th>
-        </tr>
-        {% for p in vector_pos %}
-        <tr>
-          <td> {{positions[p].dtiist}} </td><td> {{positions[p].dtosoll}} </td><td> {{positions[p].asset}} </td><td> {{ current_user.positionsplits[p].userlots }}  </td>
-          <td> {{positions[p].groiist}} </td><td> {{positions[p].roiist}} </td><td> {{current_user.positionsplits[p].userlots*positions[p].roiist*1000}} </td>
-        </tr>
-        {% endfor %}    
+      <tr>
+        <th> Yield </th><th> ROI </th>
+      </tr>
+      <tr>
+        <td> {{'%0.2f'| format(current_user.budget-current_user.deposit)}} € </td><td> {{'%0.2f'| format(performance['total_roi'])}} %</td>
+      </tr>
     </table>
+    <h3> Today </h3>
+    <table>
+      <tr>
+        <th> Yield </th><th> ROI </th>
+      </tr>
+      <tr>
+        <td> {{'%0.2f'| format(performance['dayly_return'])}} € </td><td> {{'%0.2f'| format(performance['dayly_roi'])}} %</td>
+      </tr>
+    </table>
+    <h3> This Week </h3>
+    <table>
+      <tr>
+        <th> Yield </th><th> ROI </th>
+      </tr>
+      <tr>
+        <td> {{'%0.2f'| format(performance['weekly_return'])}} € </td><td> {{'%0.2f'| format(performance['weekly_roi'])}} %</td>
+      </tr>
+    </table>
+    <h3> This month </h3>
+    <table>
+      <tr>
+        <th> Yield</th><th> ROI </th>
+      </tr>
+      <tr>
+        <td> {{'%0.2f'| format(performance['monthly_return'])}} € </td><td> {{'%0.2f'| format(performance['monthly_roi'])}} %</td>
+      </tr>
+    </table>
+    <h3> YTD </h3>
+    <table>
+      <tr>
+        <th> Yield </th><th> ROI</th>
+      </tr>
+      <tr>
+        <td> {{'%0.2f'| format(performance['yearly_return'])}} € </td><td> {{'%0.2f'| format(performance['yearly_roi'])}} %</td>
+      </tr>
+    </table>
+    </div>
 {% endblock %}

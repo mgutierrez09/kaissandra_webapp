@@ -1,12 +1,10 @@
-# Kaissandra Webapp
+# Kaissandra Webapp :ok_hand:
 
 Server-side for Kaissandra App implemented in python.
 
-## How to use
-
 ## Setup
 
-### Local setup
+### Local Setup
 
  First install packages in requirements.txt with `$pip install -r requirements.txt`. Visual cpp is required too and can be 
 downloaded from ___.
@@ -33,7 +31,7 @@ u.check_password(<password>)
 db.session.add(u)
 db.session.commit()
 ```
-### Set up user remotely
+### Remote Setup with API Calls
 
 1. Create new user remotely:
 
@@ -45,11 +43,13 @@ db.session.commit()
 
 3. Add funds:
 
-`http POST http://localhost:5000/api/users/<user id>/funds funds=<funds> "Authorization:Bearer <token user>"`
+`http POST http://localhost:5000/api/users/<user id>/funds funds=<funds> "Authorization:Bearer <token admin>"`
 
 4. Add trader
 
 `http POST http://localhost:5000/api/users/<user id>/traders tradername=<trader name> budget=<budget> poslots=<volune> leverage=<leverage> "Authorization:Bearer <token user>"`
+
+## How to use
 
 Some usuful commands:
 
@@ -80,6 +80,10 @@ Some usuful commands:
 - Move db forward after cleaning up alembic_version table in DB:
 
 `$ flask db stamp head`
+
+- Change trading parameters:
+
+`$ http PUT https://kaissandra-webapp.herokuapp.com/api/traders/sessions/change_params stoploss=<value> lots=<value> "Authorization:Bearer <token>"`
  
 ## Author
 
