@@ -35,7 +35,10 @@ def calculate_performance_user(user, positions, dti_positions):
     total_return = 0.0
     # loop over positions
     for i in range(len(dti_positions)):
-        roi_i = positions[i].roiist
+        if positions[i].groiist==0.0 and positions[i].roiist==0.0:
+            roi_i = positions[i].roisoll
+        else:
+            roi_i = positions[i].roiist
         lots_i = user.positionsplits[i].userlots
         if dti_positions[i].strftime("%Y%m%d")==today:
             dayly_roi += roi_i

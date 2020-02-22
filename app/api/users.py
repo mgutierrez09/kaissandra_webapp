@@ -180,7 +180,31 @@ def set_deposits(id):
         })
         return response
     return bad_request('deposits must be included.')
+
+@bp.route('/users/<int:id>/set_budget', methods=['POST'])
+@token_auth.login_required
+def set_budget(id):
+    """ Manually set current user's budget """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    data = request.get_json() or {}
+    user = User.query.get(id)
+    if not user:
+        return bad_request('User does not exist.')
     
+    if 'budget' in data:
+        try:
+            budget = float(data["budget"])
+        except:
+            return bad_request('Deposits must be a list of floats separated by commas.')
+        user.budget = budget
+        db.session.commit()
+        response = jsonify({
+            'message': 'Budget set. Current budget: '+str(user.budget),
+        })
+        return response
+    return bad_request('deposits must be included.')
+
 
 @bp.route('/users/<int:id>/traders', methods=['POST'])
 @token_auth.login_required
