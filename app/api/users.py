@@ -358,7 +358,7 @@ def add_splits_to_user(id):
             
             if not p.dtiist:
                 dti = p.dtisoll
-                print("WARNING! DTi from dtisoll")
+                # print("WARNING! DTi from dtisoll")
             else:
                 dti = p.dtiist
             #print(dti)
