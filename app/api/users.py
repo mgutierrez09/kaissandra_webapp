@@ -400,6 +400,6 @@ def add_splits_to_user(id):
 def get_users():
     """ """
     users = User.query.all()
-    usersname = [user.username user in users]
+    usersname = [user.username for user in users]
     return jsonify({"usersname":usersname})
 
