@@ -372,44 +372,32 @@ def add_splits_to_user(id):
     positions = Position.query.all()
     splits = get_positions_from_splits(user)
     pos_id_splits = [split.id for split in splits]
-    print(pos_id_splits)
     added_pos_ids = []
     counter = 0
     mess = "Splits added"
     for p in positions:
         try:
             # check if dti is newwer than starting and if pos not yet in user splits
-            
-            #print(dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')-init_date>=dt.timedelta(0))
-            
             if not p.dtiist:
                 dti = p.dtisoll
-                # print("WARNING! DTi from dtisoll")
             else:
                 dti = p.dtiist
             #print(dti)
             pos_date = dt.datetime.strptime(dti,'%Y.%m.%d %H:%M:%S')
             session = Session.query.filter_by(id=p.session_id).first()
-            # print(pos_date-init_date>=dt.timedelta(0))
-            # print(end_date-pos_date>=dt.timedelta(0))
-            # print(p.id not in pos_id_splits)
-            # print(session.sessiontype)
-            # print(session.sessiontest)
             if pos_date-init_date>=dt.timedelta(0) and end_date-pos_date>=dt.timedelta(0) and \
                 p.id not in pos_id_splits and \
                 session.sessiontype=='live' and not session.sessiontest:
-                #print(p.id)
                 # add position to user splits
                 positionsplit = PositionSplit(userlots=lots)
                 p.add_split(positionsplit)
                 user.add_position(positionsplit)
-                user.budget += lots*p.roiist*Config.LOT/100
-                #print(user.budget)
+                #user.budget += lots*p.roiist*Config.LOT/100
                 added_pos_ids.append(p.id)
                 db.session.commit()
+                counter += 1
         except (TypeError,ValueError):
             pass
-        counter += 1
         if counter==10:
             mess="Stopped before addind all splits"
             break
