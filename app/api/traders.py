@@ -873,6 +873,22 @@ def extend_position(id):
 #    result = trader_sch.dump(traders)
 #    return jsonify({'traders': result})
 
+@bp.route('/traders/sessions/set_sessiontest', methods=['PUT'])
+@token_auth.login_required
+def init_sessions_sessiontest():
+    """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    sessions = Session.query.all()
+    sessions_id = []
+    for session in sessions:
+        if session.sessiontest==None:
+            session.sessiontest = False
+            sessions_id.append(session.id)
+    db.session.commit()
+    return jsonify({'sessions_id':sessions_id})
+    
+
 def update_results(position):
     """ Set splits corresponding to users for the position """
     session = Session.query.filter_by(id=position.session_id).first()

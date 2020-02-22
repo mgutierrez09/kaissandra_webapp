@@ -139,7 +139,10 @@ def add_funds(id):
         except:
             return bad_request('Funds must be a float number.')
         user.budget += funds
-        user.deposit += funds
+        if not user.deposit:
+            user.deposit = user.budget
+        else:
+            user.deposit += funds
         deposit = Deposit(volume=funds)
         user.add_deposit(deposit)
         db.session.commit()
@@ -149,6 +152,34 @@ def add_funds(id):
         return response
     else:
         return bad_request('Funds must be included.')
+
+@bp.route('/users/<int:id>/set_deposits', methods=['POST'])
+@token_auth.login_required
+def set_deposits(id):
+    """ Add funds to account """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    data = request.get_json() or {}
+    user = User.query.get(id)
+    if not user:
+        return bad_request('User does not exist.')
+    
+    if 'deposits' in data:
+        try:
+            list_deposits = [float(deposit) for deposit in data['deposits'].split(",")]
+            total_deposit = sum(list_deposits)
+        except:
+            return bad_request('Deposits must be a list of floats separated by commas.')
+        for deposit in list_deposits:
+            user.add_deposit(Deposit(volume=deposit))
+        user.deposit = total_deposit
+        user.budget = total_deposit
+        db.session.commit()
+        response = jsonify({
+            'message': 'Deposits added. Total deposits: '+str(user.deposit),
+        })
+        return response
+    return bad_request('deposits must be included.')
     
 
 @bp.route('/users/<int:id>/traders', methods=['POST'])
@@ -317,20 +348,27 @@ def add_splits_to_user(id):
     positions = Position.query.all()
     splits = get_positions_from_splits(user)
     pos_id_splits = [split.id for split in splits]
+    print(pos_id_splits)
     added_pos_ids = []
     for p in positions:
         try:
             # check if dti is newwer than starting and if pos not yet in user splits
             
             #print(dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')-init_date>=dt.timedelta(0))
-            print(p.dtiist)
-            pos_date = dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')
+            
+            if not p.dtiist:
+                dti = p.dtisoll
+                print("WARNING! DTi from dtisoll")
+            else:
+                dti = p.dtiist
+            print(dti)
+            pos_date = dt.datetime.strptime(dti,'%Y.%m.%d %H:%M:%S')
             session = Session.query.filter_by(id=p.session_id).first()
-            # print(pos_date-init_date>=dt.timedelta(0))
-            # print(end_date-pos_date>=dt.timedelta(0))
-            # print(p.id not in pos_id_splits)
-            # print(session.sessiontype=='live')
-            # print(not session.sessiontest)
+            print(pos_date-init_date>=dt.timedelta(0))
+            print(end_date-pos_date>=dt.timedelta(0))
+            print(p.id not in pos_id_splits)
+            print(session.sessiontype)
+            print(session.sessiontest)
             if pos_date-init_date>=dt.timedelta(0) and end_date-pos_date>=dt.timedelta(0) and \
                 p.id not in pos_id_splits and \
                 session.sessiontype=='live' and not session.sessiontest:

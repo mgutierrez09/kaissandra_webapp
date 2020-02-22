@@ -11,7 +11,9 @@ from flask import render_template, flash, redirect, url_for, request
 from app.main.forms import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.tables_test import User, Position
-from app.util import calculate_performance_user, get_positions_from_splits, get_positions_dti, sort_positions
+from app.util import (calculate_performance_user, get_positions_from_splits, 
+                    get_positions_dti, sort_positions, get_positions_dto, 
+                    get_positions_groi, get_positions_roi)
 from werkzeug.urls import url_parse
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -41,11 +43,19 @@ def profile(username):
 def dashboard(username):
     user = User.query.filter_by(username=username).first_or_404()
     positions = get_positions_from_splits(user)
-    # get datetimes of positions
+    # get opening datetimes of positions
     dti_positions = get_positions_dti(positions)
+    # get closing datetimes of positions
+    dto_positions = get_positions_dto(positions)
+    # get closing datetimes of positions
+    groi_positions = get_positions_groi(positions)
+    # get closing datetimes of positions
+    roi_positions = get_positions_roi(positions)
     # get indexes ordered
     idx_ordered = sort_positions(dti_positions)
-    return render_template('dashboard.html', title=username+"'s Dashboard", positions=positions, vector_pos=idx_ordered)
+    return render_template('dashboard.html', title=username+"'s Dashboard", positions=positions, 
+                            vector_pos=idx_ordered, dti_positions=dti_positions, dto_positions=dto_positions, 
+                            groi_positions=groi_positions, roi_positions=roi_positions)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
