@@ -79,19 +79,19 @@ def get_positions_dti(positions):
             dts.append(dt.datetime.strptime(position.dtiist,'%Y.%m.%d %H:%M:%S'))
         elif type(position.dtisoll)==str and len(position.dtisoll)>0:
             dts.append(dt.datetime.strptime(position.dtisoll,'%Y.%m.%d %H:%M:%S'))
-        elif type(position.dtoist)==str and len(position.dtoist)>0:
+        else:
             dts.append(dt.datetime.strptime('2018.01.01 23:59:59','%Y.%m.%d %H:%M:%S'))
     return dts
 
 def get_positions_dto(positions):
-    """ Get DTi of all positions """
+    """ Get DTo of all positions """
     dts = []
     for position in positions:
         if type(position.dtoist)==str and len(position.dtoist)>0:
             dts.append(dt.datetime.strptime(position.dtoist,'%Y.%m.%d %H:%M:%S'))
         elif type(position.dtosoll)==str and len(position.dtosoll)>0:
-            dts.append(dt.datetime.strptime(position.dtisoll,'%Y.%m.%d %H:%M:%S'))
-        elif type(position.dtoist)==str and len(position.dtoist)>0:
+            dts.append(dt.datetime.strptime(position.dtosoll,'%Y.%m.%d %H:%M:%S'))
+        else:
             dts.append(dt.datetime.strptime('2018.01.01 23:59:59','%Y.%m.%d %H:%M:%S'))
     return dts
 
@@ -99,24 +99,20 @@ def get_positions_groi(positions):
     """ Get DTi of all positions """
     ret = []
     for position in positions:
-        if type(position.groiist)==float:
-            ret.append(position.groiist)
-        elif type(position.groisoll)==float:
+        if position.groiist==0.0 and position.roiist==0.0:
             ret.append(position.groisoll)
         else:
-            ret.append(0.0)
+            ret.append(position.groiist)
     return ret
 
 def get_positions_roi(positions):
     """ Get DTi of all positions """
     ret = []
     for position in positions:
-        if type(position.roiist)==float:
-            ret.append(position.roiist)
-        elif type(position.roisoll)==float:
+        if position.groiist==0.0 and position.roiist==0.0:
             ret.append(position.roisoll)
         else:
-            ret.append(0.0)
+            ret.append(position.roiist)
     return ret
 
 def get_positions_from_splits(user):
