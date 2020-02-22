@@ -76,6 +76,10 @@ Some usuful commands:
 - Close sessions
 
 `http PUT http://localhost:5000/api/traders/sessions/close` "Authorization:Bearer tVGT8/M8ybkJsmUqRQ1z+B2sMYJDt6TV"
+
+- Move db forward after cleaning up alembic_version table in DB:
+
+`$ flask db stamp head`
  
 ## Author
 
