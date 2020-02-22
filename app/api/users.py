@@ -44,9 +44,9 @@ def get_positions_user(id):
         'Splits':result_split
     })
 
-@bp.route('/users/<int:id>/signup', methods=['POST'])
+@bp.route('/users/signup', methods=['POST'])
 @token_auth.login_required # temporary. Only admins are able to create new users
-def create_user(id):
+def create_user():
     if not g.current_user.isadmin:
         return unauthorized_request("User is not admin. Access denied")
     data = request.get_json() or {}
@@ -361,24 +361,24 @@ def add_splits_to_user(id):
                 print("WARNING! DTi from dtisoll")
             else:
                 dti = p.dtiist
-            print(dti)
+            #print(dti)
             pos_date = dt.datetime.strptime(dti,'%Y.%m.%d %H:%M:%S')
             session = Session.query.filter_by(id=p.session_id).first()
-            print(pos_date-init_date>=dt.timedelta(0))
-            print(end_date-pos_date>=dt.timedelta(0))
-            print(p.id not in pos_id_splits)
-            print(session.sessiontype)
-            print(session.sessiontest)
+            # print(pos_date-init_date>=dt.timedelta(0))
+            # print(end_date-pos_date>=dt.timedelta(0))
+            # print(p.id not in pos_id_splits)
+            # print(session.sessiontype)
+            # print(session.sessiontest)
             if pos_date-init_date>=dt.timedelta(0) and end_date-pos_date>=dt.timedelta(0) and \
                 p.id not in pos_id_splits and \
                 session.sessiontype=='live' and not session.sessiontest:
-                print(p.id)
+                #print(p.id)
                 # add position to user splits
                 positionsplit = PositionSplit(userlots=lots)
                 p.add_split(positionsplit)
                 user.add_position(positionsplit)
                 user.budget += lots*p.roiist*Config.LOT/100
-                print(user.budget)
+                #print(user.budget)
                 added_pos_ids.append(p.id)
         except (TypeError,ValueError):
             pass
