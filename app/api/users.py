@@ -350,6 +350,8 @@ def add_splits_to_user(id):
     pos_id_splits = [split.id for split in splits]
     print(pos_id_splits)
     added_pos_ids = []
+    counter = 0
+    mess = "Splits added"
     for p in positions:
         try:
             # check if dti is newwer than starting and if pos not yet in user splits
@@ -383,13 +385,17 @@ def add_splits_to_user(id):
                 db.session.commit()
         except (TypeError,ValueError):
             pass
+        counter += 1
+        if counter==10:
+            mess="Stopped before addind all splits"
+            break
     # print(init_date)
     # print(pos_id_splits)
     #db.session.commit()
-    if len(added_pos_ids)>0:
-        mess = "Splits added."
-    else:
-        mess = "No splits added."
+    # if len(added_pos_ids)>0:
+    #     mess = "Splits added."
+    # else:
+    #     mess = "No splits added."
     response = jsonify({
             'message': mess,
             'pos_ids': added_pos_ids,
