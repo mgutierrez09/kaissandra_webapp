@@ -380,11 +380,12 @@ def add_splits_to_user(id):
                 user.budget += lots*p.roiist*Config.LOT/100
                 #print(user.budget)
                 added_pos_ids.append(p.id)
+                db.session.commit()
         except (TypeError,ValueError):
             pass
     # print(init_date)
     # print(pos_id_splits)
-    db.session.commit()
+    #db.session.commit()
     if len(added_pos_ids)>0:
         mess = "Splits added."
     else:
