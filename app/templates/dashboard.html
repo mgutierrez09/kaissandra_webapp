@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Dashboard</h1>
+    <div class="container">
+    <h2> Positions </h2>
+    <table border="1">
+      <thead>
+        <tr>
+          <th> #Position </th><th> Open Time </th><th> Close Time </th><th> Asset </th><th> Size (lots) </th><th> GROI (%) </th><th> ROI (%) </th><th> Yield (€) </th>
+        </tr>
+      </thead>
+        <tbody>
+          {% for p in vector_pos %}
+            <tr>
+              <td> {{vector_pos|length-loop.index0}} </td><td> {{dti_positions[p]}}  </td><td>  {{dto_positions[p]}}  </td><td>  {{positions[p].asset}}  </td>
+              <td>  {{ '%0.2f'| format(current_user.positionsplits[p].userlots) }}  </td>
+              <td> {{'%0.2f'| format(groi_positions[p])}} </td><td> {{'%0.2f'| format(roi_positions[p])}} </td>
+              <td> {{'%0.2f'| format(current_user.positionsplits[p].userlots*roi_positions[p]*1000)}} </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+            
+    </table>
+    <p>WARNING! The positions outcome might not exactly match the real peformance for now. We are currently working to solve it :).</p>
+    </div>
+{% endblock %}

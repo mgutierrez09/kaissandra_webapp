@@ -10,9 +10,10 @@ import jwt
 import base64
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import url_for, current_app
-from app import db, ma, Config
+from app import db, ma, Config, login
 import re
 import datetime as dt
+from flask_login import UserMixin
 
 TraderAsset = db.Table(
     'traderasset',
@@ -29,6 +30,20 @@ class UserTrader(db.Model):
     poslots = db.Column(db.Float) # lots per position
     trader = db.relationship("Trader", back_populates="users")
     user = db.relationship("User", back_populates="traders")
+
+    def set_attributes(self, data):
+        """  """
+        for attr in data:
+            if hasattr(self, attr) and self.check_attribute(attr):
+                setattr(self, attr, data[attr])
+            else:
+                return -1
+        return 1
+
+    def check_attribute(self, attr):
+        """ """
+        # TODO: make sure that attribute follows the requirements
+        return True
     
 TraderStratetgy = db.Table(
     'traderstratetgy',
@@ -48,7 +63,7 @@ SessionStratetgy = db.Table(
     db.Column('strategy_id', db.Integer, db.ForeignKey('strategy.id'))
 )
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     isadmin = db.Column(db.Boolean)
@@ -60,7 +75,10 @@ class User(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     datecreated = db.Column(db.DateTime, default=dt.datetime.utcnow)
+    deposits = db.relationship("Deposit", backref="user")
     budget = db.Column(db.Float, default=0.0)
+    deposit = db.Column(db.Float, default=0.0)
+    userevents = db.relationship("Event", backref="user")
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration = db.Column(db.DateTime)
     traders = db.relationship("UserTrader", back_populates="user")
@@ -128,6 +146,15 @@ class User(db.Model):
             #db.session.commit()
             return 1
         else:
+            return 0
+
+    def add_deposit(self, deposit):
+        """  """
+        if deposit not in self.deposits:
+            self.deposits.append(deposit)
+            #db.session.commit()
+            return 1
+        else:
             return 0 
         
     def set_attributes(self, data):
@@ -164,6 +191,12 @@ class User(db.Model):
     def revoke_token(self):
         self.token_expiration = dt.datetime.utcnow() - dt.timedelta(seconds=1)
 
+    def log_event(self, log):
+        """ Log an event """
+        self.userevents.append(Event(log=log))
+        db.session.commit()
+        return True
+
     @staticmethod
     def check_token(token):
         user = User.query.filter_by(token=token).first()
@@ -179,6 +212,23 @@ class User(db.Model):
         except:
             return
         return User.query.get(id)
+
+class Deposit(db.Model):
+    __tablename__ = 'deposit'
+    id = db.Column(db.Integer, primary_key=True)
+    volume = db.Column(db.Float)
+    datetime = db.Column(db.DateTime, default=dt.datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return '<Deposit {}>'.format(self.id)
+
+class Event(db.Model):
+    __tablename__ = 'event'
+    id = db.Column(db.Integer, primary_key=True)
+    datetime = db.Column(db.DateTime, default=dt.datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    log = db.Column(db.String(64))
     
 class Trader(db.Model):
     __tablename__ = 'trader'
@@ -419,6 +469,7 @@ class Session(db.Model):
     running = db.Column(db.Boolean, default=True)
     sessionname = db.Column(db.String(64), index=True, unique=True)
     sessiontype = db.Column(db.String(10)) # backtest/live
+    sessiontest = db.Column(db.Boolean, default=False)
     dti = db.Column(db.DateTime, default=dt.datetime.utcnow)
     dto = db.Column(db.DateTime)
     groisoll = db.Column(db.Float, default=0.0)
@@ -429,6 +480,7 @@ class Session(db.Model):
     meanspread = db.Column(db.Float)
     trader_id = db.Column(db.Integer, db.ForeignKey('trader.id'))
     positions = db.relationship("Position", backref="session")
+    newparams = db.Column(db.Boolean, default=False) # indicates that new params have been set
     sessionstrategies = db.relationship("Strategy",
                                  secondary=SessionStratetgy, 
                                  backref="sessions")
@@ -490,6 +542,7 @@ class Position(db.Model):
     roisoll = db.Column(db.Float, default=0.0)
     roiist = db.Column(db.Float, default=0.0)
     returns = db.Column(db.Float, default=0.0)
+    swap = db.Column(db.Float, default=0.0) # swap in pips
     espread = db.Column(db.Float)
     spread = db.Column(db.Float)
     lots = db.Column(db.Float)
@@ -509,7 +562,7 @@ class Position(db.Model):
     
     def __repr__(self):
         # TODO: Print position values in a table
-        return '<Position {}>'.format(self.__tablename__)
+        return '<Position {}>'.format(self.id)
     
     def check_attribute(self, attr):
         """ """
@@ -563,6 +616,12 @@ class PositionSplit(db.Model):
         # TODO: Print position values in a table
         return '<PositionSplit>'
     
+# Helper function for flask_login
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+    
+# Schemas
 class StrategySchema(ma.ModelSchema):
     class Meta:
         model = Strategy
