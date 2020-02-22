@@ -156,7 +156,7 @@ def add_funds(id):
 @bp.route('/users/<int:id>/set_deposits', methods=['POST'])
 @token_auth.login_required
 def set_deposits(id):
-    """ Add funds to account """
+    """ Add funds to account retroactively """
     if not g.current_user.isadmin:
         return unauthorized_request("User is not admin. Access denied")
     data = request.get_json() or {}
@@ -396,4 +396,10 @@ def add_splits_to_user(id):
     response.status_code = 202
     return response
 
+@bp.route('/users', methods=['GET'])
+def get_users():
+    """ """
+    users = User.query.all()
+    usersname = [user.username user in users]
+    return jsonify({"usersname":usersname})
 
