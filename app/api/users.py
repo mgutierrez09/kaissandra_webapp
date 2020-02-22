@@ -397,10 +397,27 @@ def add_splits_to_user(id):
     response.status_code = 202
     return response
 
+@bp.route('/users/<int:id>/delete_splits', methods=['POST'])
+@token_auth.login_required
+def delete_splits(id):
+    """ Delete user's splits """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    user = User.query.get(id)
+    if not user:
+        return bad_request('User does not exist.')
+    for split in user.positionsplits:
+        db.session.delete(split)
+    db.session.commit()
+    id_splits = [split.id for split in user.positionsplits]
+    return jsonify({"splits":id_splits})
+
 @bp.route('/users', methods=['GET'])
 def get_users():
     """ """
     users = User.query.all()
     usersname = [user.username for user in users]
     return jsonify({"usersname":usersname})
+
+
 
