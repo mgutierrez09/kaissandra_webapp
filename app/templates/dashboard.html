@@ -2,6 +2,20 @@
 
 {% block content %}
     <h1>Dashboard</h1>
+    <div>
+      <h2> Set Filter </h2>
+      <p>
+        {{ filterform.dates.label }}
+        {{ filterform.dates() }}
+      </p>
+      <p>
+        {{ filterform.start_date.label }}
+        {{ filterform.start_date() }}
+        {{ filterform.end_date.label }}
+        {{ filterform.end_date() }}
+      </p>
+      <p>{{ filterform.submit() }}</p>
+    </div>
     <div class="container">
     <h2> Positions </h2>
     <table border="1">
@@ -19,6 +33,19 @@
               <td> {{'%0.2f'| format(current_user.positionsplits[p].userlots*roi_positions[p]*1000)}} </td>
             </tr>
             {% endfor %}
+            <tr>
+              <td> Total </td><td>    </td><td>    </td><td>   </td>
+              {% if vector_pos|length>0 %}
+              <td>  NIY  </td>
+              <td> {{'%0.2f'| format(groi_positions|sum)}} </td><td> {{'%0.2f'| format(roi_positions|sum)}} </td>
+              <td> NIY </td>
+              {% else %}
+              <td>  0.0  </td>
+              <td> 0.0 </td>
+              <td> 0.0 </td>
+              <td> 0.0 </td>
+              {% endif %}
+            </tr>
         </tbody>
             
     </table>

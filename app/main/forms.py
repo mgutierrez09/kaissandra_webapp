@@ -6,7 +6,7 @@ Created on Sat Feb  1 16:17:10 2020
 """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, DateField
 from wtforms.validators import DataRequired
 
 class LoginForm(FlaskForm):
@@ -14,3 +14,10 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
+
+class FilterTable(FlaskForm):
+    dates = SelectField('Dates',choices=[('today','today'),('yesterday','yesterday'),('this week','week'),
+                                        ('this month','month'),('YTD','YTD'),('custom','custom')])
+    start_date = DateField('From')
+    end_date = DateField('Until')
+    submit = SubmitField('Update')
