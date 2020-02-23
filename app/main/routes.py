@@ -58,24 +58,33 @@ def dashboard(username):
         # POST request
         today = dt.datetime.today()
         if filterform.dates.data=='today':
-            start_date = datetime.datetime(today.year, today.month, today.day)
-            end_date = datetime.datetime(today.year, today.month, today.day+1)
+            start_date = dt.datetime(today.year, today.month, today.day)
+            end_date = dt.datetime(today.year, today.month, today.day+1)
         elif filterform.dates.data=='yesterday':
-            start_date = datetime.datetime(today.year, today.month, today.day-1)
-            end_date = datetime.datetime(today.year, today.month, today.day)
+            start_date = dt.datetime(today.year, today.month, today.day-1)
+            end_date = dt.datetime(today.year, today.month, today.day)
         elif filterform.dates.data=='week':
-            start_date = datetime.datetime(today.year, today.month, today.day-1)
-            end_date = datetime.datetime(today.year, today.month, today.day)
+            #dweek = today.isocalendar()[1]
+            first_weekday = today-dt.timedelta(days=today.weekday())
+            start_date = dt.datetime(first_weekday.year, first_weekday.month, first_weekday.day)
+            end_date = dt.datetime(today.year, today.month, today.day+1)
+            print(today.weekday())
         elif filterform.dates.data=='month':
-            pass
+            #first_monthday = today-dt.timedelta(days=today.day-1)
+            start_date = dt.datetime(today.year, today.month, 1)
+            end_date = dt.datetime(today.year, today.month, today.day+1)
         elif filterform.dates.data=='YTD':
-            pass
+            start_date = dt.datetime(today.year, 1, 1)
+            end_date = dt.datetime(today.year, today.month, today.day+1)
         else:
-            pass
+            start_date = None
+            end_date = None
+            flash('Not implemented yet')
 
         # start_date_str='2020.01.06 00:00:00'
         # end_date_str='2020.01.06 04:00:00'
-    #print(start_date_str)
+    print(start_date)
+    print(end_date)
     filtered_dtis = filter_positions_date(positions, dti_positions, 
                                         start_date=start_date, 
                                         end_date=end_date)

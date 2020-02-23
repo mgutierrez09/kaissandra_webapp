@@ -16,8 +16,8 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
 class FilterTable(FlaskForm):
-    dates = SelectField('Dates',choices=[('today','today'),('yesterday','yesterday'),('this week','week'),
-                                        ('this month','month'),('YTD','YTD'),('custom','custom')])
+    dates = SelectField('Dates',choices=[('today','today'),('yesterday','yesterday'),('week','this week'),
+                                        ('month','this month'),('YTD','YTD'),('custom','custom')])
     start_date = DateField('From', render_kw = {'disabled': 'disabled'})
     end_date = DateField('Until', render_kw = {'disabled': 'disabled'})
     submit = SubmitField('Update')
