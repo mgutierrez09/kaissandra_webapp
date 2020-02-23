@@ -4,6 +4,7 @@ Created on Sat Feb  1 15:20:43 2020
 
 @author: magut
 """
+import datetime as dt
 
 from app import db
 from app.main import bp
@@ -38,18 +39,46 @@ def profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('profile.html', title='Profile')
 
-@bp.route('/dashboard/<username>', methods=['GET'])
+@bp.route('/dashboard/<username>', methods=['GET','POST'])
 @login_required
 def dashboard(username):
+    if current_user.username!=username:
+        return redirect(url_for('main.login'))
     user = User.query.filter_by(username=username).first_or_404()
     filterform = FilterTable()
+    #get user's splits
     positions = get_positions_from_splits(user)
     # get opening datetimes of positions
     dti_positions = get_positions_dti(positions)
-    or_idx_pos = [i for i, _ in enumerate(dti_positions)]
+    if not filterform.validate_on_submit():
+        # GET request
+        start_date = None
+        end_date = None
+    else:
+        # POST request
+        today = dt.datetime.today()
+        if filterform.dates.data=='today':
+            start_date = datetime.datetime(today.year, today.month, today.day)
+            end_date = datetime.datetime(today.year, today.month, today.day+1)
+        elif filterform.dates.data=='yesterday':
+            start_date = datetime.datetime(today.year, today.month, today.day-1)
+            end_date = datetime.datetime(today.year, today.month, today.day)
+        elif filterform.dates.data=='week':
+            start_date = datetime.datetime(today.year, today.month, today.day-1)
+            end_date = datetime.datetime(today.year, today.month, today.day)
+        elif filterform.dates.data=='month':
+            pass
+        elif filterform.dates.data=='YTD':
+            pass
+        else:
+            pass
+
+        # start_date_str='2020.01.06 00:00:00'
+        # end_date_str='2020.01.06 04:00:00'
+    #print(start_date_str)
     filtered_dtis = filter_positions_date(positions, dti_positions, 
-                                        start_date_str='2020.01.06 00:00:00', 
-                                        end_date_str='2020.01.06 04:00:00')
+                                        start_date=start_date, 
+                                        end_date=end_date)
     dti_positions_filtered = [dti_positions[i] for i in filtered_dtis]
     positions_filtered = [positions[i] for i in filtered_dtis]
     # get closing datetimes of positions

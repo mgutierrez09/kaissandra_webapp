@@ -124,12 +124,10 @@ def get_positions_from_splits(user):
     all_positions = [Position.query.filter_by(id=split.position_id).first() for split in user.positionsplits]
     return  all_positions
 
-def filter_positions_date(positions, dtis, start_date_str=None, end_date_str=None):
+def filter_positions_date(positions, dtis, start_date=None, end_date=None):
     """ Filter positions with start and end dates """
-    if start_date_str and end_date_str:
+    if start_date and end_date:
         idx_pos = []
-        start_date = dt.datetime.strptime(start_date_str,'%Y.%m.%d %H:%M:%S')
-        end_date = dt.datetime.strptime(end_date_str,'%Y.%m.%d %H:%M:%S')
         for i, dti in enumerate(dtis):
             if dti-start_date>=dt.timedelta(0) and end_date-dti>=dt.timedelta(0):
                 idx_pos.append(i)

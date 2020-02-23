@@ -4,6 +4,8 @@
     <h1>Dashboard</h1>
     <div>
       <h2> Set Filter </h2>
+      <form action="" method="post" novalidate>
+        {{filterform.hidden_tag()}}
       <p>
         {{ filterform.dates.label }}
         {{ filterform.dates() }}
@@ -16,6 +18,7 @@
       </p>
       <p>{{ filterform.submit() }}</p>
     </div>
+  </form>
     <div class="container">
     <h2> Positions </h2>
     <table border="1">
