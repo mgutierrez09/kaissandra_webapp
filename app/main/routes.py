@@ -21,17 +21,19 @@ from werkzeug.urls import url_parse
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    positions = get_positions_from_splits(current_user)
-    # get datetimes of positions
-    dti_positions = get_positions_dti(positions)
-    # get performance
-    performance = calculate_performance_user(current_user, positions, dti_positions)
-    # get indexes ordered
-    idx_ordered = sort_positions(dti_positions)
-    # log login event
-    current_user.log_event("LOGIN")
-    # render page
-    return render_template('index.html', title='Home', performance=performance, vector_pos=idx_ordered)
+    if not  current_user.isadmin:
+        positions = get_positions_from_splits(current_user)
+        # get datetimes of positions
+        dti_positions = get_positions_dti(positions)
+        # get performance
+        performance = calculate_performance_user(current_user, positions, dti_positions)
+        # get indexes ordered
+        idx_ordered = sort_positions(dti_positions)
+        # log login event
+        current_user.log_event("LOGIN")
+        # render page
+        return render_template('index.html', title='Home', performance=performance, vector_pos=idx_ordered)
+    else: return redirect('/admin')
 
 @bp.route('/profile/<username>', methods=['GET'])
 @login_required

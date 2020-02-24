@@ -614,7 +614,7 @@ class PositionSplit(db.Model):
     
     def __repr__(self):
         # TODO: Print position values in a table
-        return '<PositionSplit>'
+        return '<PositionSplit> %r'%(self.id)
     
 # Helper function for flask_login
 @login.user_loader
@@ -672,3 +672,4 @@ class ExtensionSchema(ma.ModelSchema):
     class Meta:
         model = Extension
         sqla_session = db.session
+

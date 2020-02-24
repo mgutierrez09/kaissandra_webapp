@@ -5,7 +5,7 @@ Created on Sat May 11 18:16:09 2019
 @author: mgutierrez
 """
 
-from flask import Flask
+from flask import Flask, redirect, url_for, flash
 from config import Config
 from logging.handlers import SMTPHandler
 import logging
@@ -13,7 +13,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from flask_mail import Mail
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
+from flask_admin import Admin, AdminIndexView
+
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -21,6 +23,18 @@ ma = Marshmallow()
 mail = Mail()
 login = LoginManager()
 login.login_view = 'main.login'
+
+
+class MyAdminIndexView(AdminIndexView):
+    """ """
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.isadmin
+    
+    def inaccessible_callback(self, name, **kwargs):
+        flash('Not allowed')
+        return redirect(url_for('main.login'))
+
+admin = Admin(template_mode='bootstrap3', index_view=MyAdminIndexView())
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -30,8 +44,10 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     ma.init_app(app)
     mail.init_app(app)
-    
     login.init_app(app)
+
+    #from app.adm.views import MyAdminIndexView
+    admin.init_app(app)
     
     from app.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
@@ -41,6 +57,9 @@ def create_app(config_class=Config):
     
     from app.api import bp as api_bp
     app.register_blueprint(api_bp, url_prefix='/api')
+
+    from app.adm import bp as admin_bp
+    app.register_blueprint(admin_bp)
     
 #    if not app.debug and not app.testing:
 #        if app.config['MAIL_SERVER']:
