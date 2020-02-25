@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+  <div class=title-page>
     <h1>Dashboard</h1>
-    <div>
+  </div>
+  <div class="container">
       <h2> Set Filter </h2>
       <form action="" method="post" novalidate>
         {{filterform.hidden_tag()}}
@@ -17,11 +19,12 @@
         {{ filterform.end_date() }}
       </p>
       <p>{{ filterform.submit() }}</p>
-    </div>
-  </form>
-    <div class="container">
+    </form>
+  </div>
+  <div class="container">
+    
     <h2> Positions </h2>
-    <table border="1">
+    <table>
       <thead>
         <tr>
           <th> #Position </th><th> Open Time </th><th> Close Time </th><th> Asset </th><th> Size (lots) </th><th> GROI (%) </th><th> ROI (%) </th><th> Yield (€) </th>

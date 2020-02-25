@@ -1,16 +1,114 @@
 body{
     background: darkgray;
+    font-family: Charter,Georgia,serif;
+    line-height: 1.5;
+    letter-spacing: 0;
+    background-color: #f1f2f4;
+    /* background-color: rgba(var(--bg), 1); */
+    color: #050526;
+    color: rgba(var(--fg), 1);
+    font-size: 1.2em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: normal;
+    word-wrap: break-word;
+    overflow-x: hidden;
+}
+.title-page {
+    text-align: center;
+    width: auto;
+    background: rgb(250, 250, 250);
+    /* box-shadow: 2px 2px 2px 2px grey; */
+    margin-right: 100px;
+    margin-left: 100px;
+    padding-left: 15px;
+    padding-right: 15px;
+    /* padding-bottom: 2px; */
+    /* padding-top: 15px; */
+    box-shadow: 0 6px 12px 6px rgba(102,119,136,0.03), 0 6px 12px rgba(102,119,136,0.05);
+    border-radius: 4px;
+    margin-bottom: 2px;
 }
 
+.container {
+    width: auto;
+    background: rgb(250, 250, 250);
+    /* box-shadow: 2px 2px 2px 2px grey; */
+    margin-right: 100px;
+    margin-left: 100px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 2px;
+    /* padding-top: 15px; */
+
+    box-shadow: 0 6px 12px 6px rgba(102,119,136,0.03), 0 6px 12px rgba(102,119,136,0.05);
+    border-radius: 4px;
+    margin-bottom: 48px;
+}
 div{
-    background: lightgray;
+    background: rgb(250, 250, 250);
+    
 }
 
 h1 {
-    color:rgba(50, 200, 50, .8);
-    background: red;
-    border-color: pink;
+
+    color:navy;
+    /* border-color: navy;
     border-width: 2px;
-    border-style: solid;
+    border-style: solid; */
+    /* width: 500px; */
     /* color:#F400DD; */
+}
+
+h2{
+    color:navy;
+    /* border-color: navy;
+    border-width: 2px;
+    border-style: solid; */
+    /* width: 500px; */
+    /* color:#F400DD; */
+}
+
+h3{
+    color:navy;
+    /* border-color: navy;
+    border-width: 2px;
+    border-style: solid; */
+    /* width: 500px; */
+    /* color:#F400DD; */
+}
+
+tbody {
+    width: auto;
+    font-weight: 400;
+    line-height: 22px;
+    color: #4a4a4a;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+table thead tr th {
+    width: auto;
+    font-weight: 500;
+    line-height: 17px;
+    color: #8B8EA7;
+    white-space: nowrap;
+}
+
+input, textarea, select, option, .form-control, .bootstrap-select.open .dropdown-toggle, .bootstrap-select .dropdown-toggle {
+    height: 40px;
+    background-color: #fff;
+    border: 1px solid #e1e2e4;
+    color: #4a4a4a;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    padding: 10px 13px;
+}
+
+.input-submit {
+    border-radius: 25px !important;
+    text-transform: uppercase;
+    font-weight: 500;
 }
