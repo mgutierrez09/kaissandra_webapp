@@ -1,19 +1,28 @@
 body{
     background: darkgray;
-    font-family: Charter,Georgia,serif;
+    font-family: 'Comfortaa';
+    /* font-family: Charter,Georgia,serif; */
     line-height: 1.5;
     letter-spacing: 0;
     background-color: #f1f2f4;
     /* background-color: rgba(var(--bg), 1); */
     color: #050526;
-    color: rgba(var(--fg), 1);
-    font-size: 1.2em;
-    -webkit-font-smoothing: antialiased;
+    font-size: 20px;
+    /* font-size: 1.2em; */
+    /* -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-weight: normal;
     word-wrap: break-word;
-    overflow-x: hidden;
+    overflow-x: hidden; */
 }
+
+#kaissandra-logo{
+    color:navy;
+    font-size: 2em;
+    font-family: 'Comfortaa';
+    font-weight: 600;
+}
+
 .title-page {
     text-align: center;
     width: auto;
@@ -28,6 +37,7 @@ body{
     box-shadow: 0 6px 12px 6px rgba(102,119,136,0.03), 0 6px 12px rgba(102,119,136,0.05);
     border-radius: 4px;
     margin-bottom: 2px;
+    font-weight: 400;
 }
 
 .container {
@@ -45,14 +55,12 @@ body{
     border-radius: 4px;
     margin-bottom: 48px;
 }
-div{
-    background: rgb(250, 250, 250);
-    
-}
 
 h1 {
 
     color:navy;
+    font-size: 2em;
+    font-weight: 600;
     /* border-color: navy;
     border-width: 2px;
     border-style: solid; */
@@ -62,6 +70,7 @@ h1 {
 
 h2{
     color:navy;
+    font-weight: 400;
     /* border-color: navy;
     border-width: 2px;
     border-style: solid; */
@@ -71,6 +80,7 @@ h2{
 
 h3{
     color:navy;
+    font-weight: 400;
     /* border-color: navy;
     border-width: 2px;
     border-style: solid; */
@@ -89,10 +99,11 @@ tbody {
 
 table thead tr th {
     width: auto;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 17px;
     color: #8B8EA7;
     white-space: nowrap;
+    vertical-align: middle;
 }
 
 input, textarea, select, option, .form-control, .bootstrap-select.open .dropdown-toggle, .bootstrap-select .dropdown-toggle {
@@ -101,14 +112,41 @@ input, textarea, select, option, .form-control, .bootstrap-select.open .dropdown
     border: 1px solid #e1e2e4;
     color: #4a4a4a;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 1em;
     font-weight: 400;
     line-height: 22px;
-    padding: 10px 13px;
+    padding: 6px 6px;
+    width: 100%;
 }
 
-.input-submit {
-    border-radius: 25px !important;
+input[type="checkbox"] {
+    border-radius: 25px;
+    background-color: navy;
+    height: 30px;
+    width: 5%;
+}
+
+input[type="submit"] {
+    border-radius: 25px;
+    background-color: navy;
+    font-weight: 400;
+    color:#FFFFFF;
     text-transform: uppercase;
     font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1em;
+    width: 100%;
+    margin: 10px 0 0;
+    padding: 2px 2px;
+    height: 48px;
+    justify-content: center;
+}
+
+a:visited{
+    color: grey;
+}
+
+a{
+    color: navy;
 }
