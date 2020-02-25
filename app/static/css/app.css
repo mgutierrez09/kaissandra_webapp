@@ -1,0 +1,16 @@
+body{
+    background: darkgray;
+}
+
+div{
+    background: lightgray;
+}
+
+h1 {
+    color:rgba(50, 200, 50, .8);
+    background: red;
+    border-color: pink;
+    border-width: 2px;
+    border-style: solid;
+    /* color:#F400DD; */
+}
