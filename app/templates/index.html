@@ -45,7 +45,7 @@
       </tr>
     </table>
     </div>
-    <div class="container-summary">
+    <span class="container-summary">
     <h3> This month </h3>
     <table>
       <tr>
@@ -55,8 +55,8 @@
         <td> {{'%0.2f'| format(performance['monthly_return'])}} € </td><td> {{'%0.2f'| format(performance['monthly_roi'])}} %</td>
       </tr>
     </table>
-    </div>
-    <div class="container-summary">
+    </span>
+    <span class="container-summary">
     <h3> YTD </h3>
     <table>
       <tr>
@@ -66,7 +66,7 @@
         <td> {{'%0.2f'| format(performance['yearly_return'])}} € </td><td> {{'%0.2f'| format(performance['yearly_roi'])}} %</td>
       </tr>
     </table>
-    </div>
-    <p> _ </p>
+    </span>
+    <p>WARNING! The positions outcome might not exactly match the real peformance for now. We are currently working to solve it :). </p>
     </div>
 {% endblock %}

@@ -3,6 +3,7 @@ body{
     /* font-family: Charter,Georgia,serif; */
     line-height: 1.5;
     letter-spacing: 0;
+    /* background-color: rgb(32, 206, 153); */
     background-color: #f1f2f4;
     /* background-color: rgba(var(--bg), 1); */
     color: #050526;
@@ -16,6 +17,7 @@ body{
 }
 
 #kaissandra-logo{
+    /* color: rgb(32, 206, 153); */
     color:navy;
     font-size: 2em;
     font-family: 'Comfortaa';
@@ -38,8 +40,10 @@ body{
     font-weight: 400;
 }
 .container-summary{
-    float: left;
-    width: 20%;
+    /* float: left; */
+    display: inline-block;
+    width: 19%;
+    /* margin-bottom: 15px; */
 } 
 .nav-bar {
     /* width: 100%; */
@@ -62,7 +66,7 @@ body{
     /* box-shadow: 2px 2px 2px 2px grey; */
     /* margin-right: 15%;
     margin-left: 15%; */
-    margin: 0 auto 0 auto;
+    margin: 300px auto auto auto;
     padding-left: 15px;
     padding-right: 15px;
     padding-bottom: 2px;
@@ -91,7 +95,7 @@ body{
 }
 
 h1 {
-
+    /* color: rgb(32, 206, 153); */
     color:navy;
     font-size: 2em;
     font-weight: 600;
@@ -103,6 +107,7 @@ h1 {
 }
 
 h2{
+    /* color: rgb(32, 206, 153); */
     color:navy;
     font-weight: 400;
     /* border-color: navy;
@@ -113,6 +118,7 @@ h2{
 }
 
 h3{
+    /* color: rgb(32, 206, 153); */
     color:navy;
     font-weight: 400;
     /* border-color: navy;
@@ -159,6 +165,7 @@ input, textarea, select, option, .form-control, .bootstrap-select.open .dropdown
 
 input[type="checkbox"] {
     border-radius: 25px;
+    /* background-color: rgb(32, 206, 153); */
     background-color: navy;
     height: 30px;
     width: 5%;
@@ -166,6 +173,7 @@ input[type="checkbox"] {
 
 input[type="submit"] {
     border-radius: 25px;
+    /* background-color: rgb(32, 206, 153); */
     background-color: navy;
     font-weight: 400;
     color:#FFFFFF;
@@ -186,5 +194,6 @@ a:visited{
 }
 
 a{
+    /* color: rgb(32, 206, 153); */
     color: navy;
 }
