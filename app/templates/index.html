@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<div class="jumbotron">
+<div class="container container-app-hl">
   <h1>Hi, {{ current_user.username }}!</h1>
 </div>  
-<div class="container">
+<div class="container container-app-hl">
     <h2> Account State </h2>
     <div><p>Balance: {{'%0.2f'| format(current_user.budget)}} €</p></div>
     <div><p>Equity: {{'%0.2f'| format(current_user.budget)}} €</p></div>
     <div><p>Deposits: {{'%0.2f'| format(current_user.deposit)}} €</p></div>
 </div>
-    <div class="container">
+    <div class="container container-app-hl">
       <h2> Performance </h2>
       <div class="row">
         <div class="col-lg-12">
@@ -26,7 +26,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-lg-3 col-md-6">
+        <div class="col-sm-3 col-xs-6">
         <h3> Today </h3>
         <table>
           <tr>
@@ -37,7 +37,7 @@
           </tr>
         </table>
         </div>
-        <div class="col-lg-3 col-md-6">
+        <div class="col-sm-3 col-xs-6">
         <h3> This Week </h3>
         <table>
           <tr>
@@ -48,7 +48,7 @@
           </tr>
         </table>
         </div>
-        <span class="col-lg-3 col-md-6">
+        <span class="col-sm-3 col-xs-6">
         <h3> This month </h3>
         <table>
           <tr>
@@ -59,7 +59,7 @@
           </tr>
         </table>
         </span>
-        <span class="col-lg-3 col-md-6">
+        <span class="col-sm-3 col-xs-6">
         <h3> YTD </h3>
         <table>
           <tr>
