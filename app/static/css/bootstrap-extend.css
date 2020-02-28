@@ -9,6 +9,11 @@ html{
     height:100%
 }
 
+#sign-in{
+    margin-top: 25%;
+    max-width: 400px;
+}
+
 .jumbotron{
     background: rgb(250, 250, 250);
     color:navy;
@@ -25,19 +30,6 @@ html{
     font-weight: 400;
     margin-bottom: 30px;
 } 
-
-h2{
-    color:navy;
-    font-weight: 400;
-}
-
-h1{
-    color:navy;
-    font-weight: 700;
-    text-align: center;
-    font-size: 4em;
-    /* text-shadow: 0 6px 12px 6px rgba(102,119,136,0.03), 0 6px 12px rgba(102,119,136,0.05); */
-}
 
 .navbar-inverse{
     background: navy;
@@ -57,6 +49,19 @@ h1{
                  0px 18px 23px rgba(0,0,0,0.1); */
 }
 
+h2{
+    color:navy;
+    font-weight: 400;
+}
+
+h1{
+    color:navy;
+    font-weight: 700;
+    text-align: center;
+    font-size: 4em;
+    /* text-shadow: 0 6px 12px 6px rgba(102,119,136,0.03), 0 6px 12px rgba(102,119,136,0.05); */
+}
+
 input[type="submit"]{
     border-radius: 25px;
     /* background-color: rgb(32, 206, 153); */
@@ -72,9 +77,4 @@ input[type="submit"]{
     height: 45px;
     justify-content: center;
     margin-bottom: 15px;
-}
-
-#sign-in{
-    margin-top: 25%;
-    max-width: 400px;
 }
