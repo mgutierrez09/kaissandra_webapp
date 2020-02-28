@@ -44,9 +44,9 @@ def get_positions_user(id):
         'Splits':result_split
     })
 
-@bp.route('/users/<int:id>/signup', methods=['POST'])
+@bp.route('/users/signup', methods=['POST'])
 @token_auth.login_required # temporary. Only admins are able to create new users
-def create_user(id):
+def create_user():
     if not g.current_user.isadmin:
         return unauthorized_request("User is not admin. Access denied")
     data = request.get_json() or {}
@@ -180,7 +180,31 @@ def set_deposits(id):
         })
         return response
     return bad_request('deposits must be included.')
+
+@bp.route('/users/<int:id>/set_budget', methods=['POST'])
+@token_auth.login_required
+def set_budget(id):
+    """ Manually set current user's budget """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    data = request.get_json() or {}
+    user = User.query.get(id)
+    if not user:
+        return bad_request('User does not exist.')
     
+    if 'budget' in data:
+        try:
+            budget = float(data["budget"])
+        except:
+            return bad_request('Deposits must be a list of floats separated by commas.')
+        user.budget = budget
+        db.session.commit()
+        response = jsonify({
+            'message': 'Budget set. Current budget: '+str(user.budget),
+        })
+        return response
+    return bad_request('deposits must be included.')
+
 
 @bp.route('/users/<int:id>/traders', methods=['POST'])
 @token_auth.login_required
@@ -347,47 +371,42 @@ def add_splits_to_user(id):
     positions = Position.query.all()
     splits = get_positions_from_splits(user)
     pos_id_splits = [split.id for split in splits]
-    print(pos_id_splits)
     added_pos_ids = []
+    counter = 0
+    mess = "Splits added"
     for p in positions:
         try:
             # check if dti is newwer than starting and if pos not yet in user splits
-            
-            #print(dt.datetime.strptime(p.dtiist,'%Y.%m.%d %H:%M:%S')-init_date>=dt.timedelta(0))
-            
             if not p.dtiist:
                 dti = p.dtisoll
-                print("WARNING! DTi from dtisoll")
             else:
                 dti = p.dtiist
-            print(dti)
+            #print(dti)
             pos_date = dt.datetime.strptime(dti,'%Y.%m.%d %H:%M:%S')
             session = Session.query.filter_by(id=p.session_id).first()
-            print(pos_date-init_date>=dt.timedelta(0))
-            print(end_date-pos_date>=dt.timedelta(0))
-            print(p.id not in pos_id_splits)
-            print(session.sessiontype)
-            print(session.sessiontest)
             if pos_date-init_date>=dt.timedelta(0) and end_date-pos_date>=dt.timedelta(0) and \
                 p.id not in pos_id_splits and \
                 session.sessiontype=='live' and not session.sessiontest:
-                print(p.id)
                 # add position to user splits
                 positionsplit = PositionSplit(userlots=lots)
                 p.add_split(positionsplit)
                 user.add_position(positionsplit)
-                user.budget += lots*p.roiist*Config.LOT/100
-                print(user.budget)
+                #user.budget += lots*p.roiist*Config.LOT/100
                 added_pos_ids.append(p.id)
+                db.session.commit()
+                counter += 1
         except (TypeError,ValueError):
             pass
+        if counter==10:
+            mess="Stopped before addind all splits"
+            break
     # print(init_date)
     # print(pos_id_splits)
-    db.session.commit()
-    if len(added_pos_ids)>0:
-        mess = "Splits added."
-    else:
-        mess = "No splits added."
+    #db.session.commit()
+    # if len(added_pos_ids)>0:
+    #     mess = "Splits added."
+    # else:
+    #     mess = "No splits added."
     response = jsonify({
             'message': mess,
             'pos_ids': added_pos_ids,
@@ -395,10 +414,27 @@ def add_splits_to_user(id):
     response.status_code = 202
     return response
 
+@bp.route('/users/<int:id>/delete_splits', methods=['POST'])
+@token_auth.login_required
+def delete_splits(id):
+    """ Delete user's splits """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    user = User.query.get(id)
+    if not user:
+        return bad_request('User does not exist.')
+    for split in user.positionsplits:
+        db.session.delete(split)
+    db.session.commit()
+    id_splits = [split.id for split in user.positionsplits]
+    return jsonify({"splits":id_splits})
+
 @bp.route('/users', methods=['GET'])
 def get_users():
     """ """
     users = User.query.all()
     usersname = [user.username for user in users]
     return jsonify({"usersname":usersname})
+
+
 
