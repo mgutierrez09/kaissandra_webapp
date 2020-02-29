@@ -59,25 +59,26 @@ def dashboard(username):
     else:
         # POST request
         today = dt.datetime.today()
+        tomorrow = today+dt.timedelta(days=1)
+        yesterday = today-dt.timedelta(days=1)
         if filterform.dates.data=='today':
             start_date = dt.datetime(today.year, today.month, today.day)
-            end_date = dt.datetime(today.year, today.month, today.day+1)
+            end_date = dt.datetime(tomorrow.year, tomorrow.month, tomorrow.day)
         elif filterform.dates.data=='yesterday':
-            start_date = dt.datetime(today.year, today.month, today.day-1)
+            start_date = dt.datetime(yesterday.year, yesterday.month, yesterday.day)
             end_date = dt.datetime(today.year, today.month, today.day)
         elif filterform.dates.data=='week':
-            #dweek = today.isocalendar()[1]
             first_weekday = today-dt.timedelta(days=today.weekday())
             start_date = dt.datetime(first_weekday.year, first_weekday.month, first_weekday.day)
-            end_date = dt.datetime(today.year, today.month, today.day+1)
+            end_date = dt.datetime(tomorrow.year, tomorrow.month, tomorrow.day)
             print(today.weekday())
         elif filterform.dates.data=='month':
             #first_monthday = today-dt.timedelta(days=today.day-1)
             start_date = dt.datetime(today.year, today.month, 1)
-            end_date = dt.datetime(today.year, today.month, today.day+1)
+            end_date = dt.datetime(tomorrow.year, tomorrow.month, tomorrow.day)
         elif filterform.dates.data=='YTD':
             start_date = dt.datetime(today.year, 1, 1)
-            end_date = dt.datetime(today.year, today.month, today.day+1)
+            end_date = dt.datetime(tomorrow.year, tomorrow.month, tomorrow.day)
         else:
             start_date = None
             end_date = None
