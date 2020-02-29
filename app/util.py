@@ -120,7 +120,19 @@ def get_positions_roi(positions):
 
 def get_positions_from_splits(user):
     """ Get positions from user splits """
-    return [Position.query.filter_by(id=split.position_id).first() for split in user.positionsplits]
+    all_positions = [Position.query.filter_by(id=split.position_id).first() for split in user.positionsplits]
+    return  all_positions
+
+def filter_positions_date(positions, dtis, start_date=None, end_date=None):
+    """ Filter positions with start and end dates """
+    if start_date and end_date:
+        idx_pos = []
+        for i, dti in enumerate(dtis):
+            if dti-start_date>=dt.timedelta(0) and end_date-dti>=dt.timedelta(0):
+                idx_pos.append(i)
+    else:
+        idx_pos = [i for i, _ in enumerate(dtis)]
+    return idx_pos
 
 def sort_positions(dti_positions, reverse=True):
     """ Sort positions from older to newer """

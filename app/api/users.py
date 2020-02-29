@@ -362,7 +362,6 @@ def add_splits_to_user(id):
         lots = float(data['lots'])
     except:
         return bad_request("Incorrect format for lots. Required: float")
-    
     try:
         init_date = dt.datetime.strptime(data['starting'],'%Y.%m.%d_%H:%M:%S')
         end_date = dt.datetime.strptime(data['ending'],'%Y.%m.%d_%H:%M:%S')

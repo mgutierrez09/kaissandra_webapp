@@ -1,59 +1,77 @@
 {% extends "base.html" %}
 
-{% block content %}
-    <h1>Hi, {{ current_user.username }}!</h1>
-    <div class="container">
+{% block app_content %}
+<div class="container container-app-hl">
+  <h1>Hi, {{ current_user.username }}!</h1>
+</div>  
+<div class="container container-app-hl">
     <h2> Account State </h2>
     <div><p>Balance: {{'%0.2f'| format(current_user.budget)}} €</p></div>
     <div><p>Equity: {{'%0.2f'| format(current_user.budget)}} €</p></div>
     <div><p>Deposits: {{'%0.2f'| format(current_user.deposit)}} €</p></div>
-    </div>
-    <div class="container">
-    <h2> Performance </h2>
-    <h3> Total </h3>
-    <table>
-      <tr>
-        <th> Yield </th><th> ROI </th>
-      </tr>
-      <tr>
-        <td> {{'%0.2f'| format(current_user.budget-current_user.deposit)}} € </td><td> {{'%0.2f'| format(performance['total_roi'])}} %</td>
-      </tr>
-    </table>
-    <h3> Today </h3>
-    <table>
-      <tr>
-        <th> Yield </th><th> ROI </th>
-      </tr>
-      <tr>
-        <td> {{'%0.2f'| format(performance['dayly_return'])}} € </td><td> {{'%0.2f'| format(performance['dayly_roi'])}} %</td>
-      </tr>
-    </table>
-    <h3> This Week </h3>
-    <table>
-      <tr>
-        <th> Yield </th><th> ROI </th>
-      </tr>
-      <tr>
-        <td> {{'%0.2f'| format(performance['weekly_return'])}} € </td><td> {{'%0.2f'| format(performance['weekly_roi'])}} %</td>
-      </tr>
-    </table>
-    <h3> This month </h3>
-    <table>
-      <tr>
-        <th> Yield</th><th> ROI </th>
-      </tr>
-      <tr>
-        <td> {{'%0.2f'| format(performance['monthly_return'])}} € </td><td> {{'%0.2f'| format(performance['monthly_roi'])}} %</td>
-      </tr>
-    </table>
-    <h3> YTD </h3>
-    <table>
-      <tr>
-        <th> Yield </th><th> ROI</th>
-      </tr>
-      <tr>
-        <td> {{'%0.2f'| format(performance['yearly_return'])}} € </td><td> {{'%0.2f'| format(performance['yearly_roi'])}} %</td>
-      </tr>
-    </table>
+</div>
+    <div class="container container-app-hl">
+      <h2> Performance </h2>
+      <div class="row">
+        <div class="col-lg-12">
+          <h3> Total </h3>
+          <table>
+            <tr>
+              <th> Yield </th><th> ROI </th>
+            </tr>
+            <tr>
+              <td> {{'%0.2f'| format(current_user.budget-current_user.deposit)}} € </td><td> {{'%0.2f'| format(performance['total_roi'])}} %</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 col-xs-6">
+        <h3> Today </h3>
+        <table>
+          <tr>
+            <th> Yield </th><th> ROI </th>
+          </tr>
+          <tr>
+            <td> {{'%0.2f'| format(performance['dayly_return'])}} € </td><td> {{'%0.2f'| format(performance['dayly_roi'])}} %</td>
+          </tr>
+        </table>
+        </div>
+        <div class="col-sm-3 col-xs-6">
+        <h3> This Week </h3>
+        <table>
+          <tr>
+            <th> Yield </th><th> ROI </th>
+          </tr>
+          <tr>
+            <td> {{'%0.2f'| format(performance['weekly_return'])}} € </td><td> {{'%0.2f'| format(performance['weekly_roi'])}} %</td>
+          </tr>
+        </table>
+        </div>
+        <span class="col-sm-3 col-xs-6">
+        <h3> This month </h3>
+        <table>
+          <tr>
+            <th> Yield</th><th> ROI </th>
+          </tr>
+          <tr>
+            <td> {{'%0.2f'| format(performance['monthly_return'])}} € </td><td> {{'%0.2f'| format(performance['monthly_roi'])}} %</td>
+          </tr>
+        </table>
+        </span>
+        <span class="col-sm-3 col-xs-6">
+        <h3> YTD </h3>
+        <table>
+          <tr>
+            <th> Yield </th><th> ROI</th>
+          </tr>
+          <tr>
+            <td> {{'%0.2f'| format(performance['yearly_return'])}} € </td><td> {{'%0.2f'| format(performance['yearly_roi'])}} %</td>
+          </tr>
+        </table>
+        </span>
+      </div>
+      <p>WARNING! The positions outcome might not exactly match the real peformance for now. We are currently working to solve it :). </p>
+    
     </div>
 {% endblock %}

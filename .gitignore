@@ -6,3 +6,4 @@ app/errors/__pycache__/*
 app/main/__pycache__/*
 migrations/versions/__pycache__/*
 migrations/__pycache__/*
+app/adm/__pycache__/*
