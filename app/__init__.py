@@ -41,7 +41,8 @@ admin = Admin(template_mode='bootstrap3', index_view=MyAdminIndexView())
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
-    
+    app.app_context().push()
+    db.app = app
     db.init_app(app)
     migrate.init_app(app, db)
     ma.init_app(app)

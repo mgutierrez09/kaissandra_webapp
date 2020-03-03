@@ -1,0 +1,40 @@
+{% extends "admin/master.html" %}
+
+{% block head %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+{% endblock head %}
+
+{% block head_css %}
+{{super()}}
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}"> -->
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-extend.css')}}">
+  <link href="https://fonts.googleapis.com/css?family=Comfortaa:400,600&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body%}
+<h1> Title </h1>
+<div class="container container-app-hl" id="logContainer">Networks Log:<p id="netLog"></p>Trader Log:<p id="traderLog"></p></div>
+<button> A button </button> 
+
+<!-- <script type="text/javascript" src="{{url_for('static', filename='admin/js/home.js')}}"></script> -->
+<script>
+    $("button").on("click", function(e){
+        alert("Button clicked");
+    })
+
+    var targetContainer = document.getElementById("logContainer");
+    var sourceNet = new EventSource("/streamNetwork");
+    var sourceTrader = new EventSource("/streamTrader");
+    
+    sourceNet.onmessage = function (event) {
+     $("#netLog").text(event.data);
+    };
+
+    sourceTrader.onmessage = function (event) {
+     $("#traderLog").text(event.data);
+    };
+
+    
+</script>
+
+{% endblock %}

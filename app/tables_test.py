@@ -229,6 +229,17 @@ class Event(db.Model):
     datetime = db.Column(db.DateTime, default=dt.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     log = db.Column(db.String(64))
+
+class LogMessage(db.Model):
+    __tablename__ = 'logmessage'
+    id = db.Column(db.Integer, primary_key=True)
+    datetime = db.Column(db.DateTime, default=dt.datetime.utcnow)
+    origin = db.Column(db.String(10))
+    asset = db.Column(db.String(6))
+    message = db.Column(db.String(300))
+
+    def __repr__(self):
+        return '<LogMessage {}>'.format(self.message)
     
 class Trader(db.Model):
     __tablename__ = 'trader'
