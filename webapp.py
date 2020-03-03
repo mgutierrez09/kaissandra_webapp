@@ -7,7 +7,7 @@ Created on Sat May 11 17:56:10 2019
 
 from app import create_app, db
 from app.tables_test import User, Position, Trader, Strategy, Network, \
-                       Session, Asset 
+                       Session, Asset, LogMessage
 
 app = create_app()
 
@@ -16,4 +16,4 @@ app = create_app()
 def make_shell_context():
     return {'db':db, 'User':User, 'Position':Position, 'Trader':Trader,
      'Strartegy':Strategy, 'Network':Network,
-     'Session':Session, 'Asset':Asset}
+     'Session':Session, 'Asset':Asset, 'LogMessage':LogMessage}

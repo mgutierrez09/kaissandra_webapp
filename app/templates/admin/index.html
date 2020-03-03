@@ -13,7 +13,7 @@
 
 {% block body%}
 <h1> Title </h1>
-<div class="container container-app-hl" id="logContainer">Container</div>
+<div class="container container-app-hl" id="logContainer">Networks Log:<p id="netLog"></p>Trader Log:<p id="traderLog"></p></div>
 <button> A button </button> 
 
 <!-- <script type="text/javascript" src="{{url_for('static', filename='admin/js/home.js')}}"></script> -->
@@ -23,10 +23,15 @@
     })
 
     var targetContainer = document.getElementById("logContainer");
-    var eventSource = new EventSource("/stream");
+    var sourceNet = new EventSource("/streamNetwork");
+    var sourceTrader = new EventSource("/streamTrader");
     
-    eventSource.onmessage = function (event) {
-     $("h1").text(event.data);
+    sourceNet.onmessage = function (event) {
+     $("#netLog").text(event.data);
+    };
+
+    sourceTrader.onmessage = function (event) {
+     $("#traderLog").text(event.data);
     };
 
     

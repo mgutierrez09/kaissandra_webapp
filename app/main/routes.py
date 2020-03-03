@@ -12,7 +12,7 @@ from app.main import bp
 from flask import render_template, flash, redirect, url_for, request, Response
 from app.main.forms import LoginForm, FilterTable
 from flask_login import current_user, login_user, logout_user, login_required
-from app.tables_test import User, Position
+from app.tables_test import User, Position, LogMessage
 from app.util import (calculate_performance_user, get_positions_from_splits, 
                     get_positions_dti, sort_positions, get_positions_dto, 
                     get_positions_groi, get_positions_roi, filter_positions_date)
@@ -135,16 +135,38 @@ def logout():
 def icon():
     return "ICON NOT ADDED"
 
-@bp.route('/stream')
-def stream():
+@bp.route('/streamNetwork')
+def streamNetwork():
     def eventStream():
         while True:
             # wait for source data to be available, then push it
-            yield 'data: {}\n\n'.format(get_message())
+            yield 'data: {}\n\n'.format(get_log_network())
     return Response(eventStream(), mimetype="text/event-stream")
 
-def get_message():
+@bp.route('/streamTrader')
+def streamTrader():
+    def eventStream():
+        while True:
+            # wait for source data to be available, then push it
+            yield 'data: {}\n\n'.format(get_log_trader())
+    return Response(eventStream(), mimetype="text/event-stream")
+
+def get_log_trader():
+    '''this could be any function that blocks until data is ready'''
+    
+    time.sleep(1.0)
+    # user = User.query.filter_by(username="kaissandra").first()
+    Logmessage = LogMessage.query.filter_by(origin="TRADER").first()
+    message = Logmessage.message
+        # s = time.ctime(time.time())
+    return message
+
+def get_log_network():
     '''this could be any function that blocks until data is ready'''
     time.sleep(1.0)
-    s = time.ctime(time.time())
-    return s
+    # user = User.query.filter_by(username="kaissandra").first()
+    
+    logmessage = LogMessage.query.filter_by(origin="NETWORK").first()
+    message = logmessage.message
+    # s = time.ctime(time.time())
+    return message

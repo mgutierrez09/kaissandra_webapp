@@ -237,6 +237,9 @@ class LogMessage(db.Model):
     origin = db.Column(db.String(10))
     asset = db.Column(db.String(6))
     message = db.Column(db.String(300))
+
+    def __repr__(self):
+        return '<LogMessage {}>'.format(self.message)
     
 class Trader(db.Model):
     __tablename__ = 'trader'
