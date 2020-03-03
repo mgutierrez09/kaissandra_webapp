@@ -5,10 +5,11 @@ Created on Sat Feb  1 15:20:43 2020
 @author: magut
 """
 import datetime as dt
+import time
 
 from app import db
 from app.main import bp
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, Response
 from app.main.forms import LoginForm, FilterTable
 from flask_login import current_user, login_user, logout_user, login_required
 from app.tables_test import User, Position
@@ -128,3 +129,22 @@ def logout():
     current_user.log_event("LOGOUT")
     logout_user()
     return redirect(url_for('main.index'))
+
+@bp.route('/favicon.ico', methods=['GET'])
+#@login_required
+def icon():
+    return "ICON NOT ADDED"
+
+@bp.route('/stream')
+def stream():
+    def eventStream():
+        while True:
+            # wait for source data to be available, then push it
+            yield 'data: {}\n\n'.format(get_message())
+    return Response(eventStream(), mimetype="text/event-stream")
+
+def get_message():
+    '''this could be any function that blocks until data is ready'''
+    time.sleep(1.0)
+    s = time.ctime(time.time())
+    return s
