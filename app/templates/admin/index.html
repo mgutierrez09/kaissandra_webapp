@@ -7,33 +7,46 @@
 {% block head_css %}
 {{super()}}
     <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}"> -->
-    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-extend.css')}}">
-  <link href="https://fonts.googleapis.com/css?family=Comfortaa:400,600&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-extend.css')}}"> -->
+  <!-- <link href="https://fonts.googleapis.com/css?family=Comfortaa:400,600&display=swap" rel="stylesheet"> -->
 {% endblock %}
 
 {% block body%}
-<h1> Title </h1>
-<div class="container container-app-hl" id="logContainer">Networks Log:<p id="netLog"></p>Trader Log:<p id="traderLog"></p></div>
+<h1> LOGS </h1>
+    {% for idx in indx_assets %}
+        <p id="{{ASSETS[idx]}}">{{ASSETS[idx]}}</p>
+        Network Log:<p id="{{'netLog'+ASSETS[idx]}}"> Waiting for connection...</p>
+        Trader Log:<p id="{{'tradeLog'+ASSETS[idx]}}">Waiting for connection...</p>
+    {% endfor %}
+    
 <button> A button </button> 
 
 <!-- <script type="text/javascript" src="{{url_for('static', filename='admin/js/home.js')}}"></script> -->
 <script>
-    $("button").on("click", function(e){
-        alert("Button clicked");
-    })
-
-    var targetContainer = document.getElementById("logContainer");
+    // $("button").on("click", function(e){
+    //     $("{{'#'+ASSETS['1']}}").text("Updated from JavaScript");
+    //     // alert("Button clicked");
+    // })
+    // loop over asset paragraphs
+    // for (var i=0; i<{{indx_assets|length}}; i++){
+    //     console.log(i)
+    // }
     var sourceNet = new EventSource("/streamNetwork");
     var sourceTrader = new EventSource("/streamTrader");
     
     sourceNet.onmessage = function (event) {
-     $("#netLog").text(event.data);
+        var split = event.data.split("/");
+        msg = split[0];
+        asset = split[1];
+        $("#netLog"+asset).text(msg);
     };
 
     sourceTrader.onmessage = function (event) {
-     $("#traderLog").text(event.data);
+        var split = event.data.split("/");
+        msg = split[0];
+        asset = split[1];
+        $("#tradeLog"+asset).text(msg);
     };
-
     
 </script>
 

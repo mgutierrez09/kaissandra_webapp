@@ -13,7 +13,7 @@ import datetime as dt
 from app.tables_test import LogMessage
 
 @bp.route('/logs/traders', methods=['POST'])
-#@token_auth.login_required
+@token_auth.login_required
 def get_trader_log():
     """  """
     json_data = request.get_json() or {}
@@ -21,12 +21,46 @@ def get_trader_log():
         return bad_request("Message not included in json.")
     if 'Name' not in json_data:
         return bad_request("Name of trader not included in json.")
+    if 'Asset' not in json_data:
+        asset = "UNKNWN"
+    else:
+        asset = json_data['Asset']
     now = dt.datetime.utcnow()
-    out = dt.datetime.strftime(now,'%d.%m.%y %H:%M:%S')+' trader '+json_data['Name']+': '+json_data['Message']
+    out = dt.datetime.strftime(now,'%d.%m.%y %H:%M:%S')+' trader '+json_data['Name']+' '+asset+' '+json_data['Message']
     print(out)
-    logmessage = LogMessage.query.filter_by(origin="TRADER").first()
+    logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
     if not logmessage:
-        logmessage = LogMessage(origin="TRADER", message=out, datetime=now)
+        logmessage = LogMessage(origin="TRADER", message=out, datetime=now, asset=asset)
+        db.session.add(logmessage)
+    else:
+        logmessage.message = out
+        logmessage.datetime = now
+    print(logmessage)
+    
+    db.session.commit()
+    return jsonify({
+        'Out': out,
+    })
+
+@bp.route('/logs/monitor', methods=['POST'])
+@token_auth.login_required
+def get_monitor_log():
+    """  """
+    json_data = request.get_json() or {}
+    if 'Message' not in json_data:
+        return bad_request("Message not included in json.")
+    if 'Name' not in json_data:
+        return bad_request("Name of trader not included in json.")
+    if 'Asset' not in json_data:
+        asset = "UNKNWN"
+    else:
+        asset = json_data['Asset']
+    now = dt.datetime.utcnow()
+    out = dt.datetime.strftime(now,'%d.%m.%y %H:%M:%S')+'Monitoring '+asset+': '+json_data['Message']
+    print(out)
+    logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
+    if not logmessage:
+        logmessage = LogMessage(origin="TRADER", message=out, datetime=now, asset=asset)
         db.session.add(logmessage)
     else:
         logmessage.message = out
@@ -39,19 +73,23 @@ def get_trader_log():
     })
     
 @bp.route('/logs/networks', methods=['POST'])
-#@token_auth.login_required
+@token_auth.login_required
 def get_network_log():
     """  """
     json_data = request.get_json() or {}
     if 'Message' not in json_data:
         return bad_request("Message not included in json.")
+    if 'Asset' not in json_data:
+        asset = "UNKNWN"
+    else:
+        asset = json_data['Asset']
     now = dt.datetime.utcnow()
-    out = dt.datetime.strftime(now,'%d.%m.%y %H:%M:%S')+' network: '+json_data['Message']
+    out = dt.datetime.strftime(now,'%d.%m.%y %H:%M:%S')+' network '+asset+" "+json_data['Message']
     print(out)
     # save it in db
-    logmessage = LogMessage.query.filter_by(origin="NETWORK").first()
+    logmessage = LogMessage.query.filter_by(origin="NETWORK", asset=asset).first()
     if not logmessage:
-        logmessage = LogMessage(origin="NETWORK", message=out, datetime=now)
+        logmessage = LogMessage(origin="NETWORK", message=json_data['Message'], asset=asset, datetime=now)
         db.session.add(logmessage)
     else:
         logmessage.message = out

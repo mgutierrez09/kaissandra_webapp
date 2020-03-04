@@ -6,8 +6,7 @@ Created on Sat Feb  1 15:20:43 2020
 """
 import datetime as dt
 import time
-
-from app import db
+from app import db, Config
 from app.main import bp
 from flask import render_template, flash, redirect, url_for, request, Response
 from app.main.forms import LoginForm, FilterTable
@@ -138,35 +137,46 @@ def icon():
 @bp.route('/streamNetwork')
 def streamNetwork():
     def eventStream():
+        ass_idx = -1
+        assets = Config.ASSETS
         while True:
-            # wait for source data to be available, then push it
-            yield 'data: {}\n\n'.format(get_log_network())
+            ass_idx = (ass_idx+1) % len(assets)
+            asset = assets[str(ass_idx)]
+            yield 'data: {}/{}\n\n'.format(get_log_network(asset), asset)
     return Response(eventStream(), mimetype="text/event-stream")
 
 @bp.route('/streamTrader')
 def streamTrader():
     def eventStream():
+        ass_idx = -1
+        assets = Config.ASSETS
         while True:
+            # update asset index
+            ass_idx = (ass_idx+1) % len(assets)
+            asset = assets[str(ass_idx)]
             # wait for source data to be available, then push it
-            yield 'data: {}\n\n'.format(get_log_trader())
+            yield "data: {}/{}\n\n".format(get_log_trader(asset), asset)
     return Response(eventStream(), mimetype="text/event-stream")
 
-def get_log_trader():
+def get_log_trader(asset):
     '''this could be any function that blocks until data is ready'''
     
-    time.sleep(1.0)
+    time.sleep(0.1)
     # user = User.query.filter_by(username="kaissandra").first()
-    Logmessage = LogMessage.query.filter_by(origin="TRADER").first()
-    message = Logmessage.message
-        # s = time.ctime(time.time())
-    return message
+    logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
+    if not logmessage:
+        return "WAITING FOR CONNECTION"
+    else:
+        return logmessage.message
 
-def get_log_network():
+def get_log_network(asset):
     '''this could be any function that blocks until data is ready'''
-    time.sleep(1.0)
+    time.sleep(0.1)
     # user = User.query.filter_by(username="kaissandra").first()
     
-    logmessage = LogMessage.query.filter_by(origin="NETWORK").first()
-    message = logmessage.message
-    # s = time.ctime(time.time())
-    return message
+    logmessage = LogMessage.query.filter_by(origin="NETWORK", asset=asset).first()
+    if not logmessage:
+        return "WAITING FOR CONNECTION"
+    else:
+        return logmessage.message
+        # s = time.ctime(time.time())

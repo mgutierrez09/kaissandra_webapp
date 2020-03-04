@@ -26,7 +26,6 @@ login = LoginManager()
 login.login_view = 'main.login'
 bootstrap = Bootstrap()
 
-
 class MyAdminIndexView(AdminIndexView):
     """ """
     def is_accessible(self):
@@ -82,6 +81,5 @@ def create_app(config_class=Config):
 #            app.logger.addHandler(mail_handler)
     
     return app
-    
     
 from app import tables_test
