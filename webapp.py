@@ -15,7 +15,7 @@ app = create_app()
 # inject Config parameters in all templates
 @app.context_processor
 def inject_config():
-    return dict(ASSETS=Config.ASSETS, indx_assets=[str(i) for i in range(len(Config.ASSETS))])
+    return dict(ASSETS=Config.ASSETS, indx_assets=Config.indx_assets)#[str(i) for i in range(len(Config.ASSETS))]
 
 @app.shell_context_processor
 def make_shell_context():

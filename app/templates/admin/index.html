@@ -12,14 +12,16 @@
 {% endblock %}
 
 {% block body%}
-<h1> LOGS </h1>
+<!-- <h1> LOGS </h1> -->
+<div>
     {% for idx in indx_assets %}
-        <p id="{{ASSETS[idx]}}">{{ASSETS[idx]}}</p>
-        Network Log:<p id="{{'netLog'+ASSETS[idx]}}"> Waiting for connection...</p>
-        Trader Log:<p id="{{'tradeLog'+ASSETS[idx]}}">Waiting for connection...</p>
+        <!-- <p id="{{ASSETS[idx]}}">{{ASSETS[idx]}}</p> -->
+        <p id="{{'netLog'+ASSETS[idx]|safe}}" style="font-size:1.0rem; border-style: hidden; margin:0 auto"> Waiting for connection...</p>
+        <p id="{{'tradeLog'+ASSETS[idx]|safe}}" style="font-size:1.0rem; border-style: hidden; margin:0 auto">Waiting for connection...</p>
     {% endfor %}
+</div>
     
-<button> A button </button> 
+<!-- <button> A button </button>  -->
 
 <!-- <script type="text/javascript" src="{{url_for('static', filename='admin/js/home.js')}}"></script> -->
 <script>
@@ -39,6 +41,7 @@
         msg = split[0];
         asset = split[1];
         $("#netLog"+asset).text(msg);
+        console.log(asset+msg);
     };
 
     sourceTrader.onmessage = function (event) {
@@ -46,6 +49,7 @@
         msg = split[0];
         asset = split[1];
         $("#tradeLog"+asset).text(msg);
+        console.log(asset+msg);
     };
     
 </script>

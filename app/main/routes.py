@@ -139,9 +139,10 @@ def streamNetwork():
     def eventStream():
         ass_idx = -1
         assets = Config.ASSETS
+        indx_assets = Config.indx_assets
         while True:
             ass_idx = (ass_idx+1) % len(assets)
-            asset = assets[str(ass_idx)]
+            asset = assets[indx_assets[ass_idx]]
             yield 'data: {}/{}\n\n'.format(get_log_network(asset), asset)
     return Response(eventStream(), mimetype="text/event-stream")
 
@@ -150,10 +151,11 @@ def streamTrader():
     def eventStream():
         ass_idx = -1
         assets = Config.ASSETS
+        indx_assets = Config.indx_assets
         while True:
             # update asset index
             ass_idx = (ass_idx+1) % len(assets)
-            asset = assets[str(ass_idx)]
+            asset = assets[indx_assets[ass_idx]]
             # wait for source data to be available, then push it
             yield "data: {}/{}\n\n".format(get_log_trader(asset), asset)
     return Response(eventStream(), mimetype="text/event-stream")

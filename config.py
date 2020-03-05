@@ -36,33 +36,20 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS = ['kaissandra.ai@gmail.com']
 
-    ASSETS = {"0":"[USDX]",
-             "1":'AUDCAD',
+    ASSETS = {"1":'AUDCAD',
              "2":'EURAUD',
              "3":'EURCAD',
              "4":'EURCHF',
-             "5":'EURCZK',
-             "6":'EURDKK',
              "7":'EURGBP',
              "8":'EURNZD',
-             "9":'EURPLN',
              "10":'EURUSD',
              "11":'GBPAUD',
              "12":'GBPCAD',
              "13":'GBPCHF',
              "14":'GBPUSD',
-             "15":'GOLD',
              "16":'USDCAD',
              "17":'USDCHF',
-             "18":'USDHKD',
              "19":'USDJPY',
-             "20":'USDMXN',
-             "21":'USDNOK',
-             "22":'USDPLN',
-             "23":'USDRUB',
-             "24":'USDSGD',
-             "25":'XAGUSD',
-             "26":'XAUUSD',
              "27":"CADJPY",
              "28":"EURJPY",
              "29":"AUDJPY",
@@ -70,4 +57,5 @@ class Config(object):
              "31":"GBPJPY",
              "32":"NZDUSD",
              "33":"AUDUSD"}
+    indx_assets=[i for i in ASSETS.keys()]
     LOT = 100000.0

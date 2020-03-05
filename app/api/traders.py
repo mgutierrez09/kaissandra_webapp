@@ -321,8 +321,8 @@ def set_strategy(id):
     # add session to strategy
     if sessionname != None:
         Session.query.filter_by(sessionname=sessionname).first().add_strategy(strategy)
-    print("Strategy slthr:")
-    print(strategy.slthr)
+    # print("Strategy slthr:")
+    # print(strategy.slthr)
     db.session.commit()
     
     if code == 1:
