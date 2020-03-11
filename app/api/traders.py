@@ -21,18 +21,18 @@ from app.api.auth import token_auth
 str_sch = StrategySchema()
 network_sch = NetworkSchema()
 ### WARNING! Temporary. Params should be read from DB
-params = {}
+config_params = {}
 
 
-@bp.route('/traders/<int:id>', methods=['GET'])
-@token_auth.login_required
-#@is_admin
-def get_trader_entry(id):
-    """  """
-    if not g.current_user.isadmin:
-        return unauthorized_request("User is not admin. Access denied")
-    #jsonify(Trader.query.get_or_404(id).to_dict())
-    return get_trader(id)
+# @bp.route('/traders/<int:id>', methods=['GET'])
+# @token_auth.login_required
+# #@is_admin
+# def get_trader_entry(id):
+#     """  """
+#     if not g.current_user.isadmin:
+#         return unauthorized_request("User is not admin. Access denied")
+#     #jsonify(Trader.query.get_or_404(id).to_dict())
+#     return get_trader(id)
 
 #@bp.route('/traders', methods=['GET'])
 ##@token_auth.login_required
@@ -569,6 +569,23 @@ def get_params():
     return jsonify({
          'params': newparams,
     })
+
+@bp.route('/traders/sessions/get_session_config', methods=['GET'])
+@token_auth.login_required
+def get_session_config():
+    """  """
+    global config_params
+    print(config_params)
+
+@bp.route('/traders/sessions/set_session_config', methods=['PUT'])
+@token_auth.login_required
+def set_session_config():
+    """  """
+    json_data = request.get_json() or {}
+    global config_params
+    config_params = json_data
+    print(config_params)
+
 @bp.route('/traders/sessions/change_params', methods=['PUT'])
 @token_auth.login_required
 def change_params():
