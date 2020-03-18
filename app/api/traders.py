@@ -7,6 +7,7 @@ Created on Tue May 14 11:00:24 2019
 
 #import json
 import time
+import pandas as pd
 import datetime as dt
 from flask import jsonify, request, url_for, g
 from app import db, ma, Config
@@ -869,6 +870,28 @@ def extend_position(id):
         'message': mess,
         'Extension': result_ext,
         'Position': result_pos
+    })
+
+@bp.route('/traders/positions/<int:id>/notextend', methods=['POST'])
+@token_auth.login_required
+def not_extend_position(id):
+    """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    json_data = request.get_json() or {}
+    position = Position.query.filter_by(id=id).first()
+    if position == None:
+        return bad_request('Position does not exist.')
+    if position.closed:
+        return bad_request('Position already closed. It cannot be extended')
+    position.groisoll = json_data['groi']
+    db.session.commit()
+    
+    mess = "Position NOT extended"
+    print("Position NOT extended")
+    print(pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()])
+    return jsonify({
+        'message': mess
     })
 
 #@bp.route('/traders/<int:id>/delete', methods=['POST'])
