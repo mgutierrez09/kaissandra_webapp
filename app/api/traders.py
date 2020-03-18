@@ -255,7 +255,7 @@ def set_trader():
         response = jsonify({'trader': result})
         # TODO: choose the right status for succesful PUT
         response.status_code = 200
-        response.headers['Location'] = url_for('api.get_trader_entry', id=trader.id)
+        #response.headers['Location'] = url_for('api.get_trader_entry', id=trader.id)
         return response
     # POST
     trader = Trader()
@@ -273,7 +273,7 @@ def set_trader():
         'trader': result,
     })
     response.status_code = 200
-    response.headers['Location'] = url_for('api.get_trader_entry', id=trader.id)
+    #response.headers['Location'] = url_for('api.get_trader_entry', id=trader.id)
     return response
 
 @bp.route('/traders/<int:id>/strategies', methods=['POST', 'PUT'])
@@ -575,7 +575,10 @@ def get_params():
 def get_session_config():
     """  """
     global config_params
-    print(config_params)
+    #print(config_params)
+    return jsonify({
+            'config': config_params
+    })
 
 @bp.route('/traders/sessions/set_session_config', methods=['PUT'])
 @token_auth.login_required
@@ -584,7 +587,10 @@ def set_session_config():
     json_data = request.get_json() or {}
     global config_params
     config_params = json_data
-    print(config_params)
+    #print(config_params)
+    return jsonify({
+            'message': "Config set."
+    })
 
 @bp.route('/traders/sessions/change_params', methods=['PUT'])
 @token_auth.login_required
@@ -925,6 +931,22 @@ def update_results(position):
     else:
         return []
 
-#def update_session(session, position):
-#    """  """
-#    pass
+@bp.route('/traders/status', methods=['PUT'])
+@token_auth.login_required
+def account_status():
+    """ Change parameters of opened sessions """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    json_data = request.get_json() or {}
+    print(json_data)
+    # update status
+    trader = Trader.query.filter_by(tradername=json_data['tradername']).first()
+    if trader:
+        trader.balance = json_data['balance']
+        trader.leverage = json_data['leverage']
+        trader.equity = json_data['equity']
+        trader.profits = json_data['profits']
+        db.session.commit()
+    else:
+        return bad_request('Trader '+json_data['tradername']+' does not exist.')
+    return jsonify(json_data)

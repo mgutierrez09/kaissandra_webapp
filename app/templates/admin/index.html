@@ -12,8 +12,13 @@
 {% endblock %}
 
 {% block body%}
+<ul class="nav nav-tabs">
+    <li role="presentation" class="active" id="logsTab"><a href="">Logs</a></li>
+    <li role="presentation" id="accountLink"><a href="{{ url_for('adm.account') }}">Account</a></li>
+    <li role="presentation" id="configLink"><a href="">Configuration</a></li>
+  </ul>
 <!-- <h1> LOGS </h1> -->
-<div>
+<div id="logsContainer">
     {% for idx in indx_assets %}
         <!-- <p id="{{ASSETS[idx]}}">{{ASSETS[idx]}}</p> -->
         <p id="{{'netLog'+ASSETS[idx]|safe}}" style="font-size:1.0rem; border-style: hidden; margin:0 auto"> Waiting for connection...</p>
@@ -33,8 +38,13 @@
     // for (var i=0; i<{{indx_assets|length}}; i++){
     //     console.log(i)
     // }
-    var sourceNet = new EventSource("/streamNetwork");
-    var sourceTrader = new EventSource("/streamTrader");
+    $("#logsTab").on("click", function(e){
+        $("{{'#'+ASSETS['1']}}").text("Updated from JavaScript");
+        // alert("Button clicked");
+    })
+
+    var sourceNet = new EventSource("/api/logs/streamNetwork");
+    var sourceTrader = new EventSource("/api/logs/streamTrader");
     
     sourceNet.onmessage = function (event) {
         var split = event.data.split("/");

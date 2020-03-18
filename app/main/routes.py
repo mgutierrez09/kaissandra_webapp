@@ -38,7 +38,7 @@ def index():
 @bp.route('/profile/<username>', methods=['GET'])
 @login_required
 def profile(username):
-    user = User.query.filter_by(username=username).first_or_404()
+    # user = User.query.filter_by(username=username).first_or_404()
     return render_template('profile.html', title='Profile')
 
 @bp.route('/dashboard/<username>', methods=['GET','POST'])
@@ -134,51 +134,52 @@ def logout():
 def icon():
     return "ICON NOT ADDED"
 
-@bp.route('/streamNetwork')
-def streamNetwork():
-    def eventStream():
-        ass_idx = -1
-        assets = Config.ASSETS
-        indx_assets = Config.indx_assets
-        while True:
-            ass_idx = (ass_idx+1) % len(assets)
-            asset = assets[indx_assets[ass_idx]]
-            yield 'data: {}/{}\n\n'.format(get_log_network(asset), asset)
-    return Response(eventStream(), mimetype="text/event-stream")
+# @bp.route('/streamNetwork')
+# def streamNetwork():
+#     def eventStream():
+#         ass_idx = -1
+#         assets = Config.ASSETS
+#         indx_assets = Config.indx_assets
+#         while True:
+#             ass_idx = (ass_idx+1) % len(assets)
+#             asset = assets[indx_assets[ass_idx]]
+#             yield 'data: {}/{}\n\n'.format(get_log_network(asset), asset)
+#     return Response(eventStream(), mimetype="text/event-stream")
 
-@bp.route('/streamTrader')
-def streamTrader():
-    def eventStream():
-        ass_idx = -1
-        assets = Config.ASSETS
-        indx_assets = Config.indx_assets
-        while True:
-            # update asset index
-            ass_idx = (ass_idx+1) % len(assets)
-            asset = assets[indx_assets[ass_idx]]
-            # wait for source data to be available, then push it
-            yield "data: {}/{}\n\n".format(get_log_trader(asset), asset)
-    return Response(eventStream(), mimetype="text/event-stream")
+# @bp.route('/streamTrader')
+# def streamTrader():
+#     def eventStream():
+#         ass_idx = -1
+#         assets = Config.ASSETS
+#         indx_assets = Config.indx_assets
+#         while True:
+#             # update asset index
+#             ass_idx = (ass_idx+1) % len(assets)
+#             asset = assets[indx_assets[ass_idx]]
+#             # wait for source data to be available, then push it
+#             yield "data: {}/{}\n\n".format(get_log_trader(asset), asset)
+#     return Response(eventStream(), mimetype="text/event-stream")
 
-def get_log_trader(asset):
-    '''this could be any function that blocks until data is ready'''
+# def get_log_trader(asset):
+#     '''this could be any function that blocks until data is ready'''
     
-    time.sleep(0.1)
-    # user = User.query.filter_by(username="kaissandra").first()
-    logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
-    if not logmessage:
-        return "WAITING FOR CONNECTION"
-    else:
-        return logmessage.message
+#     time.sleep(0.1)
+#     # user = User.query.filter_by(username="kaissandra").first()
+#     global tradeLogMsg
+#     logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
+#     if not logmessage:
+#         return "WAITING FOR CONNECTION"
+#     else:
+#         return tradeLogMsg#logmessage.message
 
-def get_log_network(asset):
-    '''this could be any function that blocks until data is ready'''
-    time.sleep(0.1)
-    # user = User.query.filter_by(username="kaissandra").first()
-    
-    logmessage = LogMessage.query.filter_by(origin="NETWORK", asset=asset).first()
-    if not logmessage:
-        return "WAITING FOR CONNECTION"
-    else:
-        return logmessage.message
-        # s = time.ctime(time.time())
+# def get_log_network(asset):
+#     '''this could be any function that blocks until data is ready'''
+#     time.sleep(0.1)
+#     # user = User.query.filter_by(username="kaissandra").first()
+#     global netLogMsg
+#     logmessage = LogMessage.query.filter_by(origin="NETWORK", asset=asset).first()
+#     if not logmessage:
+#         return "WAITING FOR CONNECTION"
+#     else:
+#         return netLogMsg#logmessage.message
+#         # s = time.ctime(time.time())

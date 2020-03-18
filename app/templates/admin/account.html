@@ -1,0 +1,45 @@
+{% extends "admin/master.html" %}
+
+{% block head %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+{% endblock head %}
+
+{% block head_css %}
+{{super()}}
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}"> -->
+    <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-extend.css')}}"> -->
+  <!-- <link href="https://fonts.googleapis.com/css?family=Comfortaa:400,600&display=swap" rel="stylesheet"> -->
+{% endblock %}
+
+{% block body%}
+<ul class="nav nav-tabs">
+    <li role="presentation" id="logsTab"><a href="/admin">Logs</a></li>
+    <li role="presentation" class="active" id="accountLink"><a href="{{ url_for('adm.account') }}">Account</a></li>
+    <li role="presentation" id="configLink"><a href="">Configuration</a></li>
+  </ul>
+<!-- <h1> LOGS </h1> -->
+<div id="accountContainer">
+    <p id="balancePar">Balance: <span id=balanceSpan></span></p>
+    <p id="equityPar">Equity: <span id=equitySpan></span></p>
+    <p id="profitPar">Profit: <span id=profitSpan></span></p>
+    <p id="leveragePar">Leverage: <span id=leverageSpan></span></p>
+</div>
+
+<script>
+    var sourceAccountStatus = new EventSource("/api/account/status");
+    
+    sourceAccountStatus.onmessage = function (event) {
+        var split = event.data.split("/");
+        balance = split[0];
+        leverage = split[1];
+        equity = split[2];
+        profit = split[3];
+        $("#balanceSpan").text(balance);
+        $("#equitySpan").text(equity);
+        $("#profitSpan").text(profit);
+        $("#leverageSpan").text(leverage);
+        console.log(event.data);
+    };
+</script>
+
+{% endblock %}
