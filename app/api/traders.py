@@ -995,8 +995,8 @@ def reset_positions():
     if not g.current_user.isadmin:
         return unauthorized_request("User is not admin. Access denied")
     Extension.query.delete()
-    Position.query.delete()
     PositionSplit.query.delete()
+    Position.query.delete()
     # delete SessionStratetgy links in session
     sessions = Session.query.all()
     for session in sessions:
