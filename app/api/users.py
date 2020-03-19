@@ -432,9 +432,8 @@ def delete_splits(id):
 @bp.route('/users', methods=['GET'])
 def get_users():
     """ """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     users = User.query.all()
     usersname = [user.username for user in users]
     return jsonify({"usersname":usersname})
-
-
-

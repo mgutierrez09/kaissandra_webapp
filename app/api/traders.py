@@ -14,7 +14,7 @@ from app import db, ma, Config
 from app.api import bp
 from app.email import send_pos_email
 from app.tables_test import (Trader, Strategy, Asset, Network, Session, Position, PositionSplit,
-                        User, TraderSchema, StrategySchema, NetworkSchema, SessionSchema, 
+                        User, Extension, TraderSchema, StrategySchema, NetworkSchema, SessionSchema, 
                         PositionSchema, PositionSplitSchema, ExtensionSchema)
 from app.api.errors import bad_request, error_response, unauthorized_request
 from app.api.auth import token_auth
@@ -23,7 +23,7 @@ str_sch = StrategySchema()
 network_sch = NetworkSchema()
 ### WARNING! Temporary. Params should be read from DB
 config_params = {}
-
+opened_positions = {}
 
 # @bp.route('/traders/<int:id>', methods=['GET'])
 # @token_auth.login_required
@@ -699,7 +699,7 @@ def open_position(id):
         return bad_request('asset must be included.')
     code = Asset.is_asset(json_data['asset'])
     if code < 0:
-        return bad_request('Asset '+json_data['asset']+' does not exist.')
+        return bad_request('Asset does not exist.')
     if 'dtisoll' not in json_data:
         return bad_request('dtisoll must be included.')
     if 'bi' not in json_data:
@@ -742,6 +742,12 @@ def open_position(id):
     del pos_dict['ao']
     del pos_dict['extensions']
     send_pos_email(pos_dict, pos_dict['dtisoll'], 'open')
+    # update dictinary tracking open positions
+    global opened_positions
+    opened_positions[id] = {'asset':json_data['asset'],
+                            'direction':json_data['direction'],
+                            'dtisoll':json_data['dtisoll'],
+                            'espread':json_data['espread']}
     return jsonify({
         'message': mess,
         'Position': result,
@@ -793,6 +799,8 @@ def close_position(id):
         splits_result = PositionSplitSchema().dump(splits[0])
     else:
         splits_result = []
+    global opened_positions
+    del opened_positions[id]
     return jsonify({
         'message': mess,
         'Position': result,
@@ -866,6 +874,9 @@ def extend_position(id):
     send_pos_email(pos_dict, extension.dt, 'extend')
     result_ext = extension_sch.dump(extension)
     #print(result_ext)
+    global opened_positions
+    opened_positions[id]['groi'] = json_data['groi']
+    opened_positions[id]['roi'] = json_data['roi']
     return jsonify({
         'message': mess,
         'Extension': result_ext,
@@ -889,7 +900,10 @@ def not_extend_position(id):
     
     mess = "Position NOT extended"
     print("Position NOT extended")
-    print(pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()])
+    print((pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()]).to_string())
+    global opened_positions
+    opened_positions[id]['groi'] = json_data['groi']
+    opened_positions[id]['roi'] = json_data['roi']
     return jsonify({
         'message': mess
     })
@@ -973,3 +987,25 @@ def account_status():
     else:
         return bad_request('Trader '+json_data['tradername']+' does not exist.')
     return jsonify(json_data)
+
+@bp.route('/traders/reset_positions', methods=['POST'])
+@token_auth.login_required
+def reset_positions():
+    """ Delete all positions/positionSplits/Sessions/Extensions from DB """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    positions = Position.query.all()
+    for position in positions:
+        db.session.delete(position)
+    positionsplits = PositionSplit.query.all()
+    for positionsplit in positionsplits:
+        db.session.delete(positionsplit)
+    sessions = Session.query.all()
+    for session in sessions:
+        db.session.delete(session)
+    extensions = Extension.query.all()
+    for extension in extensions:
+        db.session.delete(extension)
+    return jsonify({'message':'Positions reset'})
+    
+
