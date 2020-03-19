@@ -1006,7 +1006,22 @@ def reset_positions():
     extensions = Extension.query.all()
     for extension in extensions:
         db.session.delete(extension)
-    db.session.commit()
+    db.session.commit() 
     return jsonify({'message':'Positions reset'})
-    
+
+
+@bp.route('/traders/number_positions', methods=['GET'])
+@token_auth.login_required
+def get_number_positions():
+    """ Get number of positions in DB """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    n_positions = Position.query.count()
+    n_positionsplits = PositionSplit.query.count()
+    n_extensions = Extension.query.count()
+    n_sessions = Session.query.count()
+    return jsonify({'n_positions':n_positions,
+                    'n_positionsplits':n_positionsplits,
+                    'n_extensions':n_extensions,
+                    'n_sessions':n_sessions})
 
