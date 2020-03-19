@@ -181,7 +181,46 @@ def set_deposits(id):
         return response
     return bad_request('deposits must be included.')
 
-@bp.route('/users/<int:id>/set_budget', methods=['POST'])
+@bp.route('/users/<int:id>/modify_budget', methods=['PUT'])
+@token_auth.login_required
+def modify_budget(id):
+    """ Add funds to account retroactively """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    data = request.get_json() or {}
+    user = User.query.get(id)
+    if not user:
+        return bad_request('User does not exist.')
+    
+    if 'budget' not in data:
+        return bad_request('budget should be included.')
+    try:
+        new_budget = float(data['budget'])
+    except:
+        return bad_request('budget should be a number.')
+    user.budget = new_budget
+    db.session.commit()
+    return jsonify({
+                    'message': 'New budget set to {.2f}'.format(new_budget)
+            })
+
+@bp.route('/users/id', methods=['GET'])
+@token_auth.login_required
+def user_id():
+    """ Add funds to account retroactively """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    data = request.get_json() or {}
+    if 'username' not in data:
+        return bad_request('username should be included.')
+    user = User.query.filter_by(username=data['username']).first()
+    if not user:
+        return bad_request('User does not exist.')
+    return jsonify({
+                    'user.id': user.id
+            })
+
+@bp.route('/users/<int:id>/set_budget', methods=['PUT'])
 @token_auth.login_required
 def set_budget(id):
     """ Manually set current user's budget """
