@@ -14,7 +14,7 @@ from app import db, ma, Config
 from app.api import bp
 from app.email import send_pos_email
 from app.tables_test import (Trader, Strategy, Asset, Network, Session, Position, PositionSplit,
-                        User, Extension, TraderSchema, StrategySchema, NetworkSchema, SessionSchema, 
+                        User, Extension, SessionStratetgy, TraderSchema, StrategySchema, NetworkSchema, SessionSchema, 
                         PositionSchema, PositionSplitSchema, ExtensionSchema)
 from app.api.errors import bad_request, error_response, unauthorized_request
 from app.api.auth import token_auth
@@ -994,18 +994,15 @@ def reset_positions():
     """ Delete all positions/positionSplits/Sessions/Extensions from DB """
     if not g.current_user.isadmin:
         return unauthorized_request("User is not admin. Access denied")
-    positions = Position.query.all()
-    for position in positions:
-        db.session.delete(position)
-    positionsplits = PositionSplit.query.all()
-    for positionsplit in positionsplits:
-        db.session.delete(positionsplit)
+    Extension.query.delete()
+    Position.query.delete()
+    PositionSplit.query.delete()
+    # delete SessionStratetgy links in session
     sessions = Session.query.all()
     for session in sessions:
-        db.session.delete(session)
-    extensions = Extension.query.all()
-    for extension in extensions:
-        db.session.delete(extension)
+        session.sessionstrategies = []
+    Session.query.delete()
+    
     db.session.commit() 
     return jsonify({'message':'Positions reset'})
 
