@@ -743,11 +743,11 @@ def open_position(id):
     del pos_dict['extensions']
     send_pos_email(pos_dict, pos_dict['dtisoll'], 'open')
     # update dictinary tracking open positions
-    global opened_positions
-    opened_positions[id] = {'asset':json_data['asset'],
-                            'direction':json_data['direction'],
-                            'dtisoll':json_data['dtisoll'],
-                            'espread':json_data['espread']}
+    # global opened_positions
+    # opened_positions[id] = {'asset':json_data['asset'],
+    #                         'direction':json_data['direction'],
+    #                         'dtisoll':json_data['dtisoll'],
+    #                         'espread':json_data['espread']}
     return jsonify({
         'message': mess,
         'Position': result,
@@ -799,8 +799,8 @@ def close_position(id):
         splits_result = PositionSplitSchema().dump(splits[0])
     else:
         splits_result = []
-    global opened_positions
-    del opened_positions[id]
+    # global opened_positions
+    # del opened_positions[id]
     return jsonify({
         'message': mess,
         'Position': result,
@@ -874,9 +874,9 @@ def extend_position(id):
     send_pos_email(pos_dict, extension.dt, 'extend')
     result_ext = extension_sch.dump(extension)
     #print(result_ext)
-    global opened_positions
-    opened_positions[id]['groi'] = json_data['groi']
-    opened_positions[id]['roi'] = json_data['roi']
+    # global opened_positions
+    # opened_positions[id]['groi'] = json_data['groi']
+    # opened_positions[id]['roi'] = json_data['roi']
     return jsonify({
         'message': mess,
         'Extension': result_ext,
@@ -901,9 +901,9 @@ def not_extend_position(id):
     mess = "Position NOT extended"
     print("Position NOT extended")
     print((pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()]).to_string())
-    global opened_positions
-    opened_positions[id]['groi'] = json_data['groi']
-    opened_positions[id]['roi'] = json_data['roi']
+    # global opened_positions
+    # opened_positions[id]['groi'] = json_data['groi']
+    # opened_positions[id]['roi'] = json_data['roi']
     return jsonify({
         'message': mess
     })
@@ -1006,6 +1006,7 @@ def reset_positions():
     extensions = Extension.query.all()
     for extension in extensions:
         db.session.delete(extension)
+    db.session.commit()
     return jsonify({'message':'Positions reset'})
     
 
