@@ -23,6 +23,7 @@ str_sch = StrategySchema()
 network_sch = NetworkSchema()
 ### WARNING! Temporary. Params should be read from DB
 config_params = {}
+command = ''
 opened_positions = {}
 
 # @bp.route('/traders/<int:id>', methods=['GET'])
@@ -576,9 +577,10 @@ def get_params():
 def get_session_config():
     """  """
     global config_params
-    #print(config_params)
+    global command
     return jsonify({
-            'config': config_params
+            'config': config_params,
+            'command':command
     })
 
 @bp.route('/traders/sessions/set_session_config', methods=['PUT'])
@@ -587,10 +589,19 @@ def set_session_config():
     """  """
     json_data = request.get_json() or {}
     global config_params
-    config_params = json_data
-    #print(config_params)
+    global command
+    msg = ''
+    if 'config' in json_data:
+        config_params = json_data['config']
+        #print(config_params)
+        msg += 'Config set. '
+
+    if 'command' in json_data:
+        command = json_data['command']
+        msg += 'Command '+command+' set.'
+        #print(command)
     return jsonify({
-            'message': "Config set."
+            'message': msg
     })
 
 @bp.route('/traders/sessions/change_params', methods=['PUT'])
@@ -968,14 +979,16 @@ def update_results(position):
     else:
         return []
 
-@bp.route('/traders/status', methods=['PUT'])
+@bp.route('/traders/account/status', methods=['PUT'])
 @token_auth.login_required
 def account_status():
     """ Change parameters of opened sessions """
     if not g.current_user.isadmin:
         return unauthorized_request("User is not admin. Access denied")
     json_data = request.get_json() or {}
-    print(json_data)
+    print("tradername: {0:s} leverage {1:.1f} balance {2:.2f} equity {3:.2f}  profits {4:.2f}"\
+              .format(json_data['tradername'], json_data['leverage'], json_data['balance'], 
+                      json_data['equity'], json_data['profits']))
     # update status
     trader = Trader.query.filter_by(tradername=json_data['tradername']).first()
     if trader:
@@ -987,6 +1000,26 @@ def account_status():
     else:
         return bad_request('Trader '+json_data['tradername']+' does not exist.')
     return jsonify(json_data)
+
+@bp.route('/traders/positions/status', methods=['PUT'])
+@token_auth.login_required
+def positions_status():
+    """ Change parameters of opened sessions """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    json_data = request.get_json() or {}
+    # print current state of positions
+    print("Total open positions: "+str(len(json_data)))
+    for asset in json_data:
+        # print(asset)
+        # print(json_data[asset])
+        print(asset+": pos_id {0:d} volume {1:.2f} open price {2:.4f} current price {3:.4f}  swap {5:.2f} deadline in {6:d} current profit {4:.2f}"\
+              .format(json_data[asset]['pos_id'], json_data[asset]['volume'], json_data[asset]['open_price'], 
+                      json_data[asset]['current_price'], json_data[asset]['current_profit'], json_data[asset]['swap'], json_data[asset]['deadline']))
+    # update status
+    response = jsonify({'message': 'positions status updated'})
+    response.status_code = 200
+    return response
 
 @bp.route('/traders/reset_positions', methods=['POST'])
 @token_auth.login_required
