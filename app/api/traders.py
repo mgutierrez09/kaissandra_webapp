@@ -23,7 +23,8 @@ str_sch = StrategySchema()
 network_sch = NetworkSchema()
 ### WARNING! Temporary. Params should be read from DB
 config_params = {}
-command = ''
+commands = []
+who = []
 opened_positions = {}
 
 # @bp.route('/traders/<int:id>', methods=['GET'])
@@ -576,32 +577,50 @@ def get_params():
 @token_auth.login_required
 def get_session_config():
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     global config_params
-    global command
+    global commands
+    global who
     return jsonify({
             'config': config_params,
-            'command':command
+            'commands':commands,
+            'who':who
     })
 
 @bp.route('/traders/sessions/set_session_config', methods=['PUT'])
 @token_auth.login_required
 def set_session_config():
     """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
     json_data = request.get_json() or {}
     global config_params
-    global command
+    global commands
+    global who
     msg = ''
     if 'config' in json_data:
         config_params = json_data['config']
         #print(config_params)
         msg += 'Config set. '
 
-    if 'command' in json_data:
-        command = json_data['command']
-        msg += 'Command '+command+' set.'
-        #print(command)
+    if 'commands' in json_data:
+        if type(json_data['commands'])!=list:
+            return bad_request("Commands should be a list.")
+        commands = json_data['commands']
+        
+        try:
+            command_names = ' '.join(commands)
+        except:
+            return bad_request("Command names should be strings.")
+        msg += 'Command/s '+command_names+' set.'
+    if 'who' in json_data:
+        who = json_data['who']
+    else:
+        who = []
     return jsonify({
-            'message': msg
+            'message': msg,
+            'who':who
     })
 
 @bp.route('/traders/sessions/change_params', methods=['PUT'])
