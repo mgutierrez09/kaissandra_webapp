@@ -9,7 +9,7 @@ Created on Tue May 14 11:00:24 2019
 import time
 import pandas as pd
 import datetime as dt
-from flask import jsonify, request, url_for, g
+from flask import jsonify, request, url_for, g, Response
 from app import db, ma, Config
 from app.api import bp
 from app.email import send_pos_email
@@ -25,7 +25,24 @@ network_sch = NetworkSchema()
 config_params = {}
 commands = []
 who = []
-opened_positions = {}
+
+def init_trader_info():
+    """ Init dict with trader info for SSE """
+    trader = Trader.query.filter_by(tradername='farnamstreet').first()
+    trader_info = {'balance':trader.balance,
+                   'equity':trader.equity,
+                   'leverage':trader.leverage,
+                   'profits':trader.profits}
+    return trader_info
+
+trader_info = init_trader_info()
+positions_info = {'EURGBP': {'pos_id':564004916, 
+                             'volume':0.02,
+                             'open_price':0.8806,
+                             'current_price':0.8814,
+                             'swap':0.00,
+                             'deadline':59,
+                             'current_profit': 1.91}}
 
 # @bp.route('/traders/<int:id>', methods=['GET'])
 # @token_auth.login_required
@@ -480,6 +497,7 @@ def open_session(id):
     # update params structure
     # params[session.id] = {}
     # print(params)
+    print("SESSION "+str(session.id)+" OPENED")
     return jsonify({
         'message': mess,
         'Session': result,
@@ -513,6 +531,7 @@ def open_session_by_name(name):
         return bad_request("Session already exits. Choose another sessionname")
     db.session.commit()
     result = session_sch.dump(session)
+    print("SESSION "+str(session.id)+" OPENED")
     # update params structure
     # params[session.id] = {}
     # print(params)
@@ -554,6 +573,7 @@ def close_session(id):
     session.dto = dt.datetime.utcnow()
     db.session.commit()
     result = SessionSchema().dump(session)
+    print("SESSION "+str(session.id)+" CLOSED")
     return jsonify({
         'message': "Session closed",
         'Session': result,
@@ -1210,6 +1230,13 @@ def account_status():
         trader.leverage = json_data['leverage']
         trader.equity = json_data['equity']
         trader.profits = json_data['profits']
+        # update trader info dict
+        global trader_info
+        trader_info = {'balance':trader.balance,
+                   'equity':trader.equity,
+                   'leverage':trader.leverage,
+                   'profits':trader.profits}
+        # commit info
         db.session.commit()
     else:
         return bad_request('Trader '+json_data['tradername']+' does not exist.')
@@ -1223,7 +1250,7 @@ def positions_status():
         return unauthorized_request("User is not admin. Access denied")
     json_data = request.get_json() or {}
     # print current state of positions
-    print("Total open positions: "+str(len(json_data)))
+    print("NUMBER OF OPEN POSITIONS: "+str(len(json_data)))
     for asset in json_data:
         # print(asset)
         # print(json_data[asset])
@@ -1231,6 +1258,8 @@ def positions_status():
               .format(json_data[asset]['pos_id'], json_data[asset]['volume'], json_data[asset]['open_price'], 
                       json_data[asset]['current_price'], json_data[asset]['current_profit'], json_data[asset]['swap'], json_data[asset]['deadline']))
     # update status
+    global positions_info
+    positions_info = json_data
     response = jsonify({'message': 'positions status updated'})
     response.status_code = 200
     return response
@@ -1289,3 +1318,42 @@ def account_status_back_compatibility():
     else:
         return bad_request('Trader '+json_data['tradername']+' does not exist.')
     return jsonify(json_data)
+
+
+### SSE ###
+@bp.route('/streamline/account/status')
+def streamAccountStatus():
+    def eventStream():
+        while True:
+            
+            yield 'data: {}\n\n'.format(get_account_status())
+    return Response(eventStream(), mimetype="text/event-stream")
+
+def get_account_status():
+    """  """
+    time.sleep(5)
+    global trader_info
+    status = '{0:.2f}/{1:.1f}/{2:.2f}/{3:.2f}'.format(trader_info['balance'], 
+                    trader_info['leverage'], trader_info['equity'], trader_info['profits'])
+    return status
+
+@bp.route('/streamline/account/positions')
+def streamOpenPositions():
+    def eventStream():
+        while True:
+            
+            yield 'data: {}\n\n'.format(get_positions_info())
+    return Response(eventStream(), mimetype="text/event-stream")
+
+def get_positions_info():
+    """  """
+    time.sleep(5)
+    global trader_info
+    status = ""
+    for asset in positions_info:
+        
+        status += asset+",{0:d},{1:.2f},{2:.4f},{3:.4f},{5:.2f},{6:d},{4:.2f}/"\
+              .format(positions_info[asset]['pos_id'], positions_info[asset]['volume'], positions_info[asset]['open_price'], \
+                      positions_info[asset]['current_price'], positions_info[asset]['current_profit'], \
+                      positions_info[asset]['swap'], positions_info[asset]['deadline'])
+    return status

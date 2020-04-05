@@ -37,7 +37,9 @@ class AccountState(BaseView):
 
 @bp.route('/adm/account')
 def account():
-    return AccountState().render('admin/account.html')
+    trader = Trader.query.filter_by(tradername='farnamstreet').first()
+    return AccountState().render('admin/account.html', balance=trader.balance, 
+                    leverage=trader.leverage, equity=trader.equity, profits=trader.profits)
 
 # admin.index_view = MyAdminIndexView()
 

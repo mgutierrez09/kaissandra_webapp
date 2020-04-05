@@ -7,11 +7,23 @@ Created on Mon Jun 24 17:12:10 2019
 import time
 from flask import request, jsonify, Response
 from app import db, Config
-from app.api import bp, tradeLogMsg, netLogMsg
+from app.api import bp
 from app.api.auth import token_auth
 from app.api.errors import bad_request
 import datetime as dt
 from app.tables_test import LogMessage, Trader
+
+def init_logs_dict():
+    """  """
+    tradeLogMsg = {}
+    netLogMsg ={}
+    for val in Config.ASSETS:
+        ass = Config.ASSETS[val]
+        tradeLogMsg[ass] = ass+" tradeLog waiting for info"
+        netLogMsg[ass] = ass+" netWork waiting for info"
+    return tradeLogMsg, netLogMsg
+
+tradeLogMsg, netLogMsg = init_logs_dict()
 
 @bp.route('/logs/traders', methods=['POST'])
 @token_auth.login_required
@@ -31,16 +43,15 @@ def get_trader_log():
     print(out)
     global tradeLogMsg
     tradeLogMsg[asset] = out
-    logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
-    if not logmessage:
-        logmessage = LogMessage(origin="TRADER", message=out, datetime=now, asset=asset)
-        db.session.add(logmessage)
-    else:
-        logmessage.message = out
-        logmessage.datetime = now
-    #print(logmessage)
+    # logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
+    # if not logmessage:
+    #     logmessage = LogMessage(origin="TRADER", message=out, datetime=now, asset=asset)
+    #     db.session.add(logmessage)
+    # else:
+    #     logmessage.message = out
+    #     logmessage.datetime = now
     
-    db.session.commit()
+    # db.session.commit()
     return jsonify({
         'Out': out,
     })
@@ -63,16 +74,15 @@ def get_monitor_log():
     print(out)
     global netLogMsg
     netLogMsg[asset] = out
-    logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
-    if not logmessage:
-        logmessage = LogMessage(origin="TRADER", message=out, datetime=now, asset=asset)
-        db.session.add(logmessage)
-    else:
-        logmessage.message = out
-        logmessage.datetime = now
-    #print(logmessage)
+    # logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
+    # if not logmessage:
+    #     logmessage = LogMessage(origin="TRADER", message=out, datetime=now, asset=asset)
+    #     db.session.add(logmessage)
+    # else:
+    #     logmessage.message = out
+    #     logmessage.datetime = now
     
-    db.session.commit()
+    # db.session.commit()
     return jsonify({
         'Out': out,
     })
@@ -104,40 +114,21 @@ def get_network_log():
     print(out)
     global netLogMsg
     netLogMsg[asset] = out
-    # save it in db
-    logmessage = LogMessage.query.filter_by(origin="NETWORK", asset=asset).first()
-    if not logmessage:
-        logmessage = LogMessage(origin="NETWORK", message=json_data['Message'], asset=asset, datetime=now)
-        db.session.add(logmessage)
-    else:
-        logmessage.message = out
-        logmessage.datetime = now
+    # # save it in db
+    # logmessage = LogMessage.query.filter_by(origin="NETWORK", asset=asset).first()
+    # if not logmessage:
+    #     logmessage = LogMessage(origin="NETWORK", message=json_data['Message'], asset=asset, datetime=now)
+    #     db.session.add(logmessage)
+    # else:
+    #     logmessage.message = out
+    #     logmessage.datetime = now
     
-    db.session.commit()
-    #print(logmessage)
+    # db.session.commit()
     return jsonify({
         'Out': out,
     })
 
 ##### Streamline SSE #####
-
-@bp.route('/account/status')
-def streamAccountStatus():
-    def eventStream():
-        # WARNING! Only compatible with farnamstreet trader for now
-        
-        while True:
-            
-            yield 'data: {}\n\n'.format(get_account_status())
-    return Response(eventStream(), mimetype="text/event-stream")
-
-def get_account_status():
-    """  """
-    time.sleep(5)
-    trader = Trader.query.filter_by(tradername='farnamstreet').first()
-    status = '{0:.2f}/{1:.1f}/{2:.2f}/{3:.2f}'.format(trader.balance, 
-                    trader.leverage, trader.equity, trader.profits)
-    return status
 
 @bp.route('/logs/streamNetwork')
 def streamNetwork():
@@ -171,20 +162,20 @@ def get_log_trader(asset):
     time.sleep(0.1)
     # user = User.query.filter_by(username="kaissandra").first()
     global tradeLogMsg
-    logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
-    if not logmessage:
-        return "WAITING FOR CONNECTION"
-    else:
-        return tradeLogMsg[asset]
+    # logmessage = LogMessage.query.filter_by(origin="TRADER", asset=asset).first()
+    # if not logmessage:
+    #     return "WAITING FOR CONNECTION"
+    # else:
+    return tradeLogMsg[asset]
 
 def get_log_network(asset):
     '''Get network logs'''
     time.sleep(0.1)
     # user = User.query.filter_by(username="kaissandra").first()
     global netLogMsg
-    logmessage = LogMessage.query.filter_by(origin="NETWORK", asset=asset).first()
-    if not logmessage:
-        return "WAITING FOR CONNECTION"
-    else:
-        return netLogMsg[asset]
+    # logmessage = LogMessage.query.filter_by(origin="NETWORK", asset=asset).first()
+    # if not logmessage:
+    #     return "WAITING FOR CONNECTION"
+    # else:
+    return netLogMsg[asset]
         # s = time.ctime(time.time())

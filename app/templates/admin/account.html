@@ -17,16 +17,31 @@
     <li role="presentation" class="active" id="accountLink"><a href="{{ url_for('adm.account') }}">Account</a></li>
     <li role="presentation" id="configLink"><a href="">Configuration</a></li>
   </ul>
-<!-- <h1> LOGS </h1> -->
+  <h2> State </h2>
 <div id="accountContainer">
-    <p id="balancePar">Balance: <span id=balanceSpan></span></p>
-    <p id="equityPar">Equity: <span id=equitySpan></span></p>
-    <p id="profitPar">Profit: <span id=profitSpan></span></p>
-    <p id="leveragePar">Leverage: <span id=leverageSpan></span></p>
+    <p id="balancePar">Balance: <span id=balanceSpan>{{'%0.2f'| format(balance)}}</span></p>
+    <p id="equityPar">Equity: <span id=equitySpan>{{'%0.2f'| format(equity)}}</span></p>
+    <p id="profitPar">Profit: <span id=profitSpan>{{'%0.2f'| format(profits)}}</span></p>
+    <p id="leveragePar">Leverage: <span id=leverageSpan>{{'%0.2f'| format(leverage)}}</span></p>
+</div>
+<h2>Open Positions</h2>
+<div id="positionsDiv">
+    <table id="myTable">
+        <thead>
+            <tr>
+                <th> Asset </th><th> ID </th><th> Volume </th><th> Open Price </th><th> Current Price </th><th> Swap </th><th> Deadline </th><th> Profit </th>
+            </tr>
+        </thead>
+    </table>
+
 </div>
 
+<button type="button" onclick="addElemet()">Add row</button>
+<button type="button" onclick="deleteElements()">Delete All</button>
+
 <script>
-    var sourceAccountStatus = new EventSource("/api/account/status");
+    var sourceAccountStatus = new EventSource("/api/streamline/account/status");
+    var sourcePositions = new EventSource("/api/streamline/account/positions");
     
     sourceAccountStatus.onmessage = function (event) {
         var split = event.data.split("/");
@@ -40,6 +55,43 @@
         $("#leverageSpan").text(leverage);
         console.log(event.data);
     };
+
+    sourcePositions.onmessage = function (event) {
+        deleteElements()
+        //console.log(event.data)
+        var assets = event.data.split("/");
+        var l = assets.length;
+        
+        
+        console.log(l);
+        for(var i=0; i<l-1; i++){
+            var info = assets[i].split(",");
+            //console.log(info);
+            addElemet(info);
+        }
+    };
+
+    // delete elements
+    function deleteElements(){
+        var table = document.getElementById("myTable");
+        var lenght = table.rows.length;
+        for (var i = 1; i<lenght; i++) {
+            table.deleteRow(-1);
+        }
+    }
+    // Show Positions Table
+    function addElemet(info) {
+        var table = document.getElementById("myTable");
+        var le = info.lenght;
+        console.log(info);
+        console.log(info.lenght);
+        var row = table.insertRow(-1);
+        for(var i=0;i<8;i++){
+            var cell = row.insertCell(i);
+            cell.innerHTML = info[i];
+        }
+        
+    }
 </script>
 
 {% endblock %}

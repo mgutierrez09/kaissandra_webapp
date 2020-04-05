@@ -634,7 +634,7 @@ class PositionSplit(db.Model):
 # Helper function for flask_login
 @login.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+    return User.query.get(id)
     
 # Schemas
 class StrategySchema(ma.ModelSchema):
