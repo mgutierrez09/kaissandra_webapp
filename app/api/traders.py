@@ -944,7 +944,7 @@ def close_position_from_name(asset):
     return jsonify({
         'message': mess,
         'Position': result,
-        'Splits':splits_result
+        'Splits':splits_result 
     })
 
 @bp.route('/traders/positions/<int:id>/upload', methods=['POST'])
