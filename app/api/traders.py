@@ -871,7 +871,6 @@ def close_position(id):
     #print(json_data['filename'])
     #print(position.filename)
     splits = update_results(position)
-    db.session.commit()
     mess = "Position closed with code "+str(code)
     result = PositionSchema().dump(position)
     
@@ -926,7 +925,7 @@ def close_position_from_name(asset):
     #print(json_data['filename'])
     #print(position.filename)
     splits = update_results(position)
-    db.session.commit()
+    
     mess = "Position closed with code "+str(code)
     result = PositionSchema().dump(position)
     
@@ -1209,6 +1208,7 @@ def update_results(position):
             user.add_position(positionsplit)
             user.budget += usertrader.poslots*position.roiist*Config.LOT/100
             splits.append(positionsplit)
+        db.session.commit()
         return splits
     else:
         return []
