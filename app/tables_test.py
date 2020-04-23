@@ -499,6 +499,7 @@ class Session(db.Model):
     sessionstrategies = db.relationship("Strategy",
                                  secondary=SessionStratetgy, 
                                  backref="sessions")
+    #configfile = db.Column(db.LargeBinary) # json with all config parameters of the session
     
     def __repr__(self):
         return '<Session {}>'.format(self.sessionname)
@@ -569,6 +570,7 @@ class Position(db.Model):
     direction =  db.Column(db.Integer)
     closed = db.Column(db.Boolean, default=False)
     strategyname = db.Column(db.String(64))
+    strategyidx = db.Column(db.Integer) # identifier for running strategies
     filename = db.Column(db.String(40))
     filecontent = db.Column(db.LargeBinary)
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'))

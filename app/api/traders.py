@@ -947,6 +947,62 @@ def close_position_from_name(asset):
         'Splits':splits_result 
     })
 
+@bp.route('/traders/positions/<asset>/<int:str_idx>/close', methods=['PUT'])
+@token_auth.login_required
+def close_position_from_name_and_strategy(asset, str_idx):
+    """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    json_data = request.get_json() or {}
+    if 'dtosoll' not in json_data:
+        return bad_request('dtosoll must be included.')
+    if 'bo' not in json_data:
+        return bad_request('bo must be included.')
+    if 'ao' not in json_data:
+        return bad_request('ao must be included.')
+    if 'spread' not in json_data:
+        return bad_request('spread must be included.')
+    if 'groisoll' not in json_data:
+        return bad_request('groisoll must be included.')
+    if 'roisoll' not in json_data:
+        return bad_request('roisoll must be included.')
+    if 'returns' not in json_data:
+        return bad_request('returns must be included.')
+    
+    json_data['closed'] = True
+    position = Position.query.filter_by(asset=asset, closed=False, strategyidx=str_idx).order_by(Position.id.desc()).first()
+    # position = Position.query.filter_by(asset=asset, closed=False).last()
+    if position.closed:
+        return bad_request('Position must be open.')
+    if position == None:
+        return bad_request('Position does not exist.')
+    code = position.set_attributes(json_data)
+    #print(json_data['filename'])
+    #print(position.filename)
+    splits = update_results(position)
+    
+    mess = "Position closed with code "+str(code)
+    result = PositionSchema().dump(position)
+    
+    #if Session.query.get(position.session_id).sessiontype == 'live':
+    pos_dict = result[0]
+    del pos_dict['positionsplits']
+    del pos_dict['filecontent']
+    del pos_dict['extensions']
+    send_pos_email(pos_dict, pos_dict['dtosoll'], 'close')
+    if len(splits)>0:
+        splits_result = PositionSplitSchema().dump(splits[0])
+    else:
+        splits_result = []
+    # global opened_positions
+    # del opened_positions[id]
+    return jsonify({
+        'message': mess,
+        'Position': result,
+        'Splits':splits_result 
+    })
+
+
 @bp.route('/traders/positions/<int:id>/upload', methods=['POST'])
 @token_auth.login_required
 def upload_position(id):
@@ -992,6 +1048,29 @@ def upload_position_from_name(asset):
         'message': "File "+position.filename+" added to position "+str(id)
     })
     
+@bp.route('/traders/positions/<asset>/<int:str_idx>/upload', methods=['POST'])
+@token_auth.login_required
+def upload_position_from_name_and_strategy(asset, str_idx):
+    """ Upload position evolution over time to DB """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    if 'file' not in request.files:
+        bad_request("File file not included")
+    file = request.files['file']
+    position = Position.query.filter_by(asset=asset, closed=False, strategyidx=str_idx).order_by(Position.id.desc()).first()
+    # position = Position.query.filter_by(asset=asset,closed=False).last()
+    if position == None:
+        bad_request("position does not exist")
+    position.filecontent = file.read()
+    #print(str(position.filecontent))
+    #print(position.filename)
+    if position.filename==None:
+        position.filename = ''
+    db.session.commit()
+    return jsonify({
+        'message': "File "+position.filename+" added to position "+str(id)
+    })
+
 @bp.route('/traders/positions/<int:id>/extend', methods=['POST'])
 @token_auth.login_required
 def extend_position(id):
@@ -1101,6 +1180,61 @@ def extend_position_from_name(asset):
         'Position': result_pos
     })
 
+@bp.route('/traders/positions/<asset>/<int:str_idx>/extend', methods=['POST'])
+@token_auth.login_required
+def extend_position_from_name_and_strategy(asset, str_idx):
+    """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    json_data = request.get_json() or {}
+    position = Position.query.filter_by(asset=asset, closed=False, strategyidx=str_idx).order_by(Position.id.desc()).first()
+    # position = Position.query.filter_by(asset=asset, closed=False).last()
+    if position == None:
+        return bad_request('Position does not exist.')
+    if position.closed:
+        return bad_request('Position already closed. It cannot be extended')
+    extension_sch = ExtensionSchema()
+    extension = extension_sch.load(json_data)[0]
+    position.add_extension(extension)
+    position.nofext += 1
+    position.groisoll = json_data['groi']
+    #code = position.set_attributes(json_data)
+    db.session.commit()
+    mess = "Position extended. Number Extensions: "+str(position.nofext)
+    result_pos = PositionSchema().dump(position)
+    #if Session.query.get(position.session_id).sessiontype == 'live':
+    pos_dict = result_pos[0]
+    # update p_mc/p_md
+    pos_dict['p_mc'] = extension.p_mc
+    pos_dict['p_md'] = extension.p_md
+    # delete unnecessary fields
+    del pos_dict['positionsplits']
+    del pos_dict['filecontent']
+    del pos_dict['filename']
+    del pos_dict['ticksdiff']
+    del pos_dict['dtiist']
+    del pos_dict['dtoist']
+    del pos_dict['dtosoll']
+    del pos_dict['groiist']
+    del pos_dict['roiist']
+    del pos_dict['bo']
+    del pos_dict['ao']
+    del pos_dict['extensions']
+    #del pos_dict['closed']
+    del pos_dict['spread']
+    del pos_dict['slfalg']
+    send_pos_email(pos_dict, extension.dt, 'extend')
+    result_ext = extension_sch.dump(extension)
+    #print(result_ext)
+    # global opened_positions
+    # opened_positions[id]['groi'] = json_data['groi']
+    # opened_positions[id]['roi'] = json_data['roi']
+    return jsonify({
+        'message': mess,
+        'Extension': result_ext,
+        'Position': result_pos
+    })
+
 @bp.route('/traders/positions/<int:id>/notextend', methods=['POST'])
 @token_auth.login_required
 def not_extend_position(id):
@@ -1135,6 +1269,32 @@ def not_extend_position_from_name(asset):
     json_data = request.get_json() or {}
     # session.query(ObjectRes).order_by(ObjectRes.id.desc()).first()
     position = Position.query.filter_by(asset=asset, closed=False).order_by(Position.id.desc()).first()
+    if position == None:
+        return bad_request('Position does not exist.')
+    if position.closed:
+        return bad_request('Position already closed. It cannot be extended')
+    position.groisoll = json_data['groi']
+    db.session.commit()
+    
+    mess = "Position NOT extended"
+    print("Position NOT extended")
+    print((pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()]).to_string())
+    # global opened_positions
+    # opened_positions[id]['groi'] = json_data['groi']
+    # opened_positions[id]['roi'] = json_data['roi']
+    return jsonify({
+        'message': mess
+    })
+
+@bp.route('/traders/positions/<asset>/<int:str_idx>/notextend', methods=['POST'])
+@token_auth.login_required
+def not_extend_position_from_name_and_strategy(asset, str_idx):
+    """  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    json_data = request.get_json() or {}
+    # session.query(ObjectRes).order_by(ObjectRes.id.desc()).first()
+    position = Position.query.filter_by(asset=asset, closed=False, strategyidx=str_idx).order_by(Position.id.desc()).first()
     if position == None:
         return bad_request('Position does not exist.')
     if position.closed:
@@ -1254,9 +1414,10 @@ def positions_status():
     for asset in json_data:
         # print(asset)
         # print(json_data[asset])
-        print(asset+": pos_id {0:d} volume {1:.2f} open price {2:.4f} current price {3:.4f}  swap {5:.2f} deadline in {6:d} current profit {4:.2f}"\
+        print("pos_id {0:d} volume {1:.2f} open price {2:.4f} current price {3:.4f}  swap {5:.2f} dir {7:d} deadline in {6:d} current profit {4:.2f} "\
               .format(json_data[asset]['pos_id'], json_data[asset]['volume'], json_data[asset]['open_price'], 
-                      json_data[asset]['current_price'], json_data[asset]['current_profit'], json_data[asset]['swap'], json_data[asset]['deadline']))
+                      json_data[asset]['current_price'], json_data[asset]['current_profit'], json_data[asset]['swap'], 
+                      json_data[asset]['deadline'], json_data[asset]['direction'])+asset)
     # update status
     global positions_info
     positions_info = json_data
