@@ -33,14 +33,45 @@ def send_pos_email(dict_pos, dt, event):
     html = content.to_html(index=False)
     subject = dt + ' ' + dict_pos['asset'] + ' ' + event
     sender = Config.ADMINS[0]
-    # TODO: get users attached to trader as recipients
-    recipients = Config.ADMINS
+    # TODO: get users investing in trader as recipients
+    if event=='open':
+        recipients = Config.ADMINS+Config.MAILS_POSITION_EXTENSION
+    elif event=='close':
+        recipients = Config.ADMINS+Config.MAILS_POSITION_EXTENSION
+    elif event=='extend':
+        recipients = Config.MAILS_POSITION_EXTENSION
+    elif event=='noextend':
+        recipients = Config.MAILS_POSITION_NOEXTENSION
     if Config.MAIL_SERVER:
         send_email(subject, sender, recipients, body, html)
 #    else:
     print("Email sent from "+sender)
     print("Receipients:")
-    print(recipients)
+    print(recipients) 
     print("Subject: "+subject)
     print("Body:")
     print(body)
+
+def send_config_email(config, asset):
+    """ Send emal about position has been opened """
+    content = pd.DataFrame({'margins':[c['mar'] for c in config['list_spread_ranges']],
+                            'spreads':[c['sp'] for c in config['list_spread_ranges']],
+                            'thresholds':[c['th'] for c in config['list_spread_ranges']],
+                            'max_opened_positions':config['max_opened_positions'],
+                            'list_thr_sl':config['list_thr_sl'],
+                            'list_max_lots_per_pos':config['list_max_lots_per_pos']}, 
+                            index=[i for i in range(len(config['list_spread_ranges']))])
+    body = content.to_string(index=False)
+    html = content.to_html(index=False)
+    subject = asset + ' ' + config['config_name']
+    sender = Config.ADMINS[0]
+    recipients = Config.MAILS_CONFIG
+    if Config.MAIL_SERVER:
+        send_email(subject, sender, recipients, body, html)
+    print("Email sent from "+sender)
+    print("Receipients:")
+    print(recipients) 
+    print("Subject: "+subject)
+    print("Body:")
+    print(body)
+    

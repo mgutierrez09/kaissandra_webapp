@@ -35,6 +35,9 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS = ['kaissandra.ai@gmail.com']
+    MAILS_POSITION_EXTENSION = ['kaissandra.extension@gmail.com','kaissandra.noextension@gmail.com']
+    MAILS_POSITION_NOEXTENSION = ['kaissandra.noextension@gmail.com']
+    MAILS_CONFIG = ['kaissandra.config@gmail.com']
 
     ASSETS = {"1":'AUDCAD',
              "2":'EURAUD',

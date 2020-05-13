@@ -12,7 +12,7 @@ import datetime as dt
 from flask import jsonify, request, url_for, g, Response
 from app import db, ma, Config
 from app.api import bp
-from app.email import send_pos_email
+from app.email import send_pos_email, send_config_email
 from app.tables_test import (Trader, Strategy, Asset, Network, Session, Position, PositionSplit,
                         User, Extension, SessionStratetgy, TraderSchema, StrategySchema, NetworkSchema, SessionSchema, 
                         PositionSchema, PositionSplitSchema, ExtensionSchema)
@@ -644,6 +644,16 @@ def get_session_config():
             'who':who
     })
 
+@bp.route('/traders/sessions/<asset>/confirm_config', methods=['PUT'])
+@token_auth.login_required
+def confirm_session_config(asset):
+    """ Route to confirm a trader configuration set of parameters per asset  """
+    if not g.current_user.isadmin:
+        return unauthorized_request("User is not admin. Access denied")
+    json_data = request.get_json() or {}
+    # send email with config dictionary
+    send_config_email(json_data, asset)
+
 @bp.route('/traders/sessions/set_session_config', methods=['PUT'])
 @token_auth.login_required
 def set_session_config():
@@ -1251,11 +1261,9 @@ def not_extend_position(id):
     db.session.commit()
     
     mess = "Position NOT extended"
-    print("Position NOT extended")
-    print((pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()]).to_string())
-    # global opened_positions
-    # opened_positions[id]['groi'] = json_data['groi']
-    # opened_positions[id]['roi'] = json_data['roi']
+    #print("Position NOT extended")
+    #print((pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()]).to_string())
+    send_pos_email(json_data, json_data['dt'], 'noextend')
     return jsonify({
         'message': mess
     })
@@ -1277,11 +1285,9 @@ def not_extend_position_from_name(asset):
     db.session.commit()
     
     mess = "Position NOT extended"
-    print("Position NOT extended")
-    print((pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()]).to_string())
-    # global opened_positions
-    # opened_positions[id]['groi'] = json_data['groi']
-    # opened_positions[id]['roi'] = json_data['roi']
+    # print("Position NOT extended")
+    # print((pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()]).to_string())
+    send_pos_email(json_data, json_data['dt'], 'noextend')
     return jsonify({
         'message': mess
     })
@@ -1303,11 +1309,9 @@ def not_extend_position_from_name_and_strategy(asset, str_idx):
     db.session.commit()
     
     mess = "Position NOT extended"
-    print("Position NOT extended")
-    print((pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()]).to_string())
-    # global opened_positions
-    # opened_positions[id]['groi'] = json_data['groi']
-    # opened_positions[id]['roi'] = json_data['roi']
+    # print("Position NOT extended")
+    # print((pd.DataFrame(json_data, index=[0])[pd.DataFrame(columns=json_data.keys()).columns.tolist()]).to_string())
+    send_pos_email(json_data, json_data['dt'], 'noextend')
     return jsonify({
         'message': mess
     })
