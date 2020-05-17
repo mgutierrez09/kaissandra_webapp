@@ -653,6 +653,9 @@ def confirm_session_config(asset):
     json_data = request.get_json() or {}
     # send email with config dictionary
     send_config_email(json_data, asset)
+    return jsonify({
+            'message':'Config confirmation email sent.'
+    })
 
 @bp.route('/traders/sessions/set_session_config', methods=['PUT'])
 @token_auth.login_required
