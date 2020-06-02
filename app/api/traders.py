@@ -1421,10 +1421,10 @@ def positions_status():
     for asset in json_data:
         # print(asset)
         # print(json_data[asset])
-        print("pos_id {0:d} volume {1:.2f} open price {2:.4f} current price {3:.4f}  swap {5:.2f} dir {7:d} deadline in {6:d} current profit {4:.2f} "\
+        print("pos_id {0:d} volume {1:.2f} open price {2:.4f} current price {3:.4f}  swap {5:.2f} dti {8} dir {7:d} deadline in {6:d} current profit {4:.2f} "\
               .format(json_data[asset]['pos_id'], json_data[asset]['volume'], json_data[asset]['open_price'], 
                       json_data[asset]['current_price'], json_data[asset]['current_profit'], json_data[asset]['swap'], 
-                      json_data[asset]['deadline'], json_data[asset]['direction'])+asset)
+                      json_data[asset]['deadline'], json_data[asset]['direction'], json_data[asset]['dti'])+" "+asset)
     # update status
     global positions_info
     positions_info = json_data
