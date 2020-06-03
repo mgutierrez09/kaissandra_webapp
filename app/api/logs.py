@@ -70,7 +70,7 @@ def get_monitor_log():
     else:
         asset = json_data['Asset']
     now = dt.datetime.utcnow()
-    out = dt.datetime.strftime(now,'%d.%m.%y %H:%M:%S')+'Monitoring '+asset+': '+json_data['Message']
+    out = dt.datetime.strftime(now,'%d.%m.%y %H:%M:%S')+' Monitoring '+asset+': '+json_data['Message']
     print(out)
     global netLogMsg
     netLogMsg[asset] = out
