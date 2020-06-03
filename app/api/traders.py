@@ -789,8 +789,17 @@ def open_position(id):
     if not g.current_user.isadmin:
         return unauthorized_request("User is not admin. Access denied")
     session = Session.query.get(id)
-    if session == None:
-        return bad_request("Session does not exist.")
+    
+    mess = ""
+    try:
+        if session == None:
+            trader = Trader.query.filter_by(tradername='farnamstreet').first()
+            session = Session(id=id)
+            code = trader.add_session(session)
+            mess += "Session created "
+    except:
+        pass
+        #return bad_request("Session does not exist.")
 #    if not session.running:
 #        return bad_request("Session not running.")
     json_data = request.get_json() or {}
@@ -819,9 +828,10 @@ def open_position(id):
         #position.dtosoll = dt.datetime.utcnow()
         #print(data_sch)
         code = session.add_position(position)
-        mess = "Position opened with code "+str(code)
+        mess += "Position opened with code "+str(code)
     except ma.ValidationError as err:
-        return jsonify(err.messages), 422
+        pass
+        #return jsonify(err.messages), 422
     
     db.session.commit()
     
